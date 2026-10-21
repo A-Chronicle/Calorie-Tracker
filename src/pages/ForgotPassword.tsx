@@ -5,6 +5,7 @@ import { api } from '../lib/api'
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
+  const [devLink, setDevLink] = useState<string>()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -13,8 +14,9 @@ export default function ForgotPassword() {
     setError('')
     setLoading(true)
     try {
-      const data = await api<{ message: string }>('/auth/forgot', { method: 'POST', body: { email } })
+      const data = await api<{ message: string; devLink?: string }>('/auth/forgot', { method: 'POST', body: { email } })
       setMessage(data.message)
+      setDevLink(data.devLink)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -42,6 +44,14 @@ export default function ForgotPassword() {
           <div className="rounded-2xl bg-mint/15 px-4 py-4 text-sm text-ink">
             <p className="font-semibold">Check your inbox</p>
             <p className="mt-1 text-neutral-600">{message}</p>
+            {devLink ? (
+              <div className="mt-4 rounded-xl bg-white p-3 text-xs text-neutral-600">
+                <p className="font-semibold text-amber">Local testing only: no email is sent in development.</p>
+                <a href={devLink} className="mt-2 block break-all font-medium text-ink underline">
+                  Open reset link
+                </a>
+              </div>
+            ) : null}
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">

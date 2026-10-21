@@ -8,6 +8,8 @@ import { forgotPasswordSchema } from '../../server/schemas.js'
 
 const RESET_TTL_MS = 30 * 60 * 1000
 const MESSAGE = 'If an account exists for that email, we have sent a reset link.'
+// Local development without an email key: the link is returned so it can be tested without email.
+const SHOW_LINK_LOCALLY = process.env.NODE_ENV !== 'production' && !process.env.RESEND_API_KEY
 
 // Always answers the same way, so the response never reveals whether an account exists.
 export async function POST(request: Request) {
@@ -22,6 +24,7 @@ export async function POST(request: Request) {
       [email],
     )
     const user = rows[0]
+    let devLink: string | undefined
     if (user) {
       const token = randomBytes(32).toString('base64url')
       // Only the newest link works, so clear any earlier unused ones.
@@ -33,11 +36,13 @@ export async function POST(request: Request) {
       ])
 
       const origin = process.env.APP_URL ?? new URL(request.url).origin
+      const link = `${origin}/reset?token=${token}`
+      if (SHOW_LINK_LOCALLY) devLink = link
       try {
         await sendEmail({
           to: email,
           subject: 'Reset your CAL-c password',
-          text: `Hi ${user.name},\n\nUse this link to choose a new password. It expires in 30 minutes and works once:\n${origin}/reset?token=${token}\n\nIf you didn't ask for this, you can ignore this email.`,
+          text: `Hi ${user.name},\n\nUse this link to choose a new password. It expires in 30 minutes and works once:\n${link}\n\nIf you didn't ask for this, you can ignore this email.`,
         })
       } catch (error) {
         // Log but don't reveal: the caller gets the same answer either way.
@@ -45,7 +50,7 @@ export async function POST(request: Request) {
       }
     }
 
-    return Response.json({ message: MESSAGE })
+    return Response.json(devLink ? { message: MESSAGE, devLink } : { message: MESSAGE })
   } catch (error) {
     return errorResponse(error)
   }

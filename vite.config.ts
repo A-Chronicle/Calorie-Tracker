@@ -15,7 +15,7 @@ function localApi(): Plugin {
     apply: 'serve',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        const url = new URL(req.url ?? '/', 'http://localhost')
+        const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`)
         if (!url.pathname.startsWith('/api/')) return next()
         void handleApi(server, req, res, url)
       })
