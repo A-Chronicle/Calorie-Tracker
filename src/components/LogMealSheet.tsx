@@ -233,7 +233,7 @@ export default function LogMealSheet() {
                 type="button"
                 disabled={!photo || analyzing}
                 onClick={() => void analyzePhoto()}
-                className="w-full rounded-2xl brand-gradient py-3 text-sm font-semibold text-white shadow-lg shadow-coral/25 disabled:opacity-50"
+                className="w-full rounded-2xl bg-ink py-3 text-sm font-semibold text-white shadow-lg disabled:opacity-50"
               >
                 {analyzing ? 'Analyzing…' : 'Analyze meal'}
               </button>
@@ -282,7 +282,7 @@ export default function LogMealSheet() {
                 <button
                   type="button"
                   onClick={() => logFromItems('search')}
-                  className="w-full rounded-2xl brand-gradient py-3 text-sm font-semibold text-white shadow-lg shadow-coral/25"
+                  className="w-full rounded-2xl bg-ink py-3 text-sm font-semibold text-white shadow-lg"
                 >
                   Add {Math.round(totals.calories)} kcal
                 </button>
@@ -305,7 +305,7 @@ export default function LogMealSheet() {
                 <Field label="Carbs" value={manualCarbs} onChange={setManualCarbs} type="number" placeholder="g" />
                 <Field label="Fat" value={manualFat} onChange={setManualFat} type="number" placeholder="g" />
               </div>
-              <button type="submit" className="w-full rounded-2xl brand-gradient py-3 text-sm font-semibold text-white shadow-lg shadow-coral/25">
+              <button type="submit" className="w-full rounded-2xl bg-ink py-3 text-sm font-semibold text-white shadow-lg">
                 Save meal
               </button>
             </form>

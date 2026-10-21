@@ -1,3 +1,5 @@
+import { Droplet, Wheat, Zap, type LucideIcon } from 'lucide-react'
+
 interface MacroBarsProps {
   protein: number
   carbs: number
@@ -7,34 +9,58 @@ interface MacroBarsProps {
   fatGoal: number
 }
 
-const TONES = {
-  coral: { tile: 'bg-coral/10', text: 'text-coral', bar: 'bg-coral' },
-  amber: { tile: 'bg-amber/15', text: 'text-amber', bar: 'bg-amber' },
-  sky: { tile: 'bg-sky/10', text: 'text-sky', bar: 'bg-sky' },
-} as const
+const PROTEIN = '#F0736B'
+const CARBS = '#F2A65A'
+const FAT = '#5C8DF6'
 
-function Tile({
+function MacroRing({
   label,
   value,
   goal,
-  tone,
+  color,
+  Icon,
 }: {
   label: string
   value: number
   goal: number
-  tone: keyof typeof TONES
+  color: string
+  Icon: LucideIcon
 }) {
-  const pct = goal > 0 ? Math.min(100, (value / goal) * 100) : 0
-  const colors = TONES[tone]
+  const size = 58
+  const stroke = 6
+  const radius = (size - stroke) / 2
+  const circumference = 2 * Math.PI * radius
+  const ratio = goal > 0 ? Math.min(value / goal, 1) : 0
+  const diff = Math.round(goal - value)
+  const over = diff < 0
+
   return (
-    <div className={`flex-1 rounded-2xl p-3 ${colors.tile}`}>
-      <p className={`text-[11px] font-bold uppercase tracking-wider ${colors.text}`}>{label}</p>
-      <p className="mt-1 text-lg font-bold leading-none text-ink">
-        {Math.round(value)}
-        <span className="text-xs font-medium text-neutral-500"> / {goal}g</span>
+    <div className="flex flex-1 flex-col items-center rounded-3xl bg-white/[0.07] px-2 py-3">
+      <p className="text-base font-bold text-white">
+        {Math.abs(diff)}g
       </p>
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/80">
-        <div className={`h-full rounded-full transition-all duration-500 ${colors.bar}`} style={{ width: `${pct}%` }} />
+      <p className="text-[11px] font-medium text-white/60">
+        {label} {over ? <span className="font-bold text-white">over</span> : 'left'}
+      </p>
+      <div className="relative mt-2" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90" aria-hidden="true">
+          <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={stroke} />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth={stroke}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference * (1 - ratio)}
+            className="transition-[stroke-dashoffset] duration-500"
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Icon className="h-4 w-4" style={{ color }} />
+        </div>
       </div>
     </div>
   )
@@ -50,9 +76,9 @@ export default function MacroBars({
 }: MacroBarsProps) {
   return (
     <div className="flex gap-2.5">
-      <Tile label="Protein" value={protein} goal={proteinGoal} tone="coral" />
-      <Tile label="Carbs" value={carbs} goal={carbsGoal} tone="amber" />
-      <Tile label="Fat" value={fat} goal={fatGoal} tone="sky" />
+      <MacroRing label="Protein" value={protein} goal={proteinGoal} color={PROTEIN} Icon={Zap} />
+      <MacroRing label="Carbs" value={carbs} goal={carbsGoal} color={CARBS} Icon={Wheat} />
+      <MacroRing label="Fats" value={fat} goal={fatGoal} color={FAT} Icon={Droplet} />
     </div>
   )
 }

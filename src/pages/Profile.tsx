@@ -90,7 +90,7 @@ export default function Profile() {
         <p className="text-xs text-neutral-500">
           Current targets: {profile.calorieGoal} kcal · {profile.proteinGoal}g protein
         </p>
-        <button type="submit" className="w-full rounded-2xl brand-gradient py-3 shadow-lg shadow-coral/25 text-sm font-semibold text-white">
+        <button type="submit" className="w-full rounded-2xl bg-ink py-3 shadow-lg text-sm font-semibold text-white">
           Recalculate goals
         </button>
         {saved ? <p className="text-center text-sm text-emerald-600">Goals updated</p> : null}

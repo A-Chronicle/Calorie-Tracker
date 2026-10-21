@@ -145,7 +145,7 @@ function TrackerStore({ email, children }: { email: string | null; children: Rea
                 setLoadError('')
                 setAttempt((n) => n + 1)
               }}
-              className="mt-4 rounded-2xl brand-gradient px-4 py-2 text-sm font-semibold text-white"
+              className="mt-4 rounded-2xl bg-ink px-4 py-2 text-sm font-semibold text-white"
             >
               Try again
             </button>

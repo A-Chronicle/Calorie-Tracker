@@ -28,6 +28,9 @@ export default function Dashboard() {
     }
   }
 
+  const remaining = Math.round(profile.calorieGoal - totals.calories)
+  const over = remaining < 0
+
   const grouped = ORDER.map((type) => ({
     type,
     meals: dayMeals.filter((m) => m.mealType === type),
@@ -36,38 +39,53 @@ export default function Dashboard() {
   return (
     <main className="px-5 pb-8 pt-8">
       <header className="flex items-center justify-between">
-        <div>
-          <p className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-semibold text-neutral-600 shadow-sm">👋 Hi, {user?.name.split(' ')[0]}</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight">Today’s <span className="brand-text">fuel</span></h1>
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-ink text-sm font-extrabold text-white">
+            C
+          </div>
+          <p className="text-lg font-bold tracking-tight">CAL-c</p>
         </div>
-        <div className="flex items-center gap-1 rounded-full bg-white px-1 py-1 shadow-md shadow-ink/5">
-          <button
-            type="button"
-            className="rounded-full p-1.5 hover:bg-neutral-100"
-            onClick={() => setSelectedDate(shiftDateKey(selectedDate, -1))}
-            aria-label="Previous day"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <p className="min-w-[92px] text-center text-sm font-semibold">{formatDayHeading(selectedDate)}</p>
-          <button
-            type="button"
-            className="rounded-full p-1.5 hover:bg-neutral-100 disabled:opacity-30"
-            onClick={() => setSelectedDate(shiftDateKey(selectedDate, 1))}
-            disabled={selectedDate >= localDateKey()}
-            aria-label="Next day"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
+        <p className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-neutral-600 shadow-sm">
+          Hi, {user?.name.split(' ')[0]}
+        </p>
       </header>
+
+      <div className="mt-6 flex items-center gap-2">
+        <button
+          type="button"
+          className="rounded-full bg-white p-1.5 shadow-sm hover:bg-neutral-100"
+          onClick={() => setSelectedDate(shiftDateKey(selectedDate, -1))}
+          aria-label="Previous day"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <p className="min-w-[110px] text-center text-base font-bold">{formatDayHeading(selectedDate)}</p>
+        <button
+          type="button"
+          className="rounded-full bg-white p-1.5 shadow-sm hover:bg-neutral-100 disabled:opacity-30"
+          onClick={() => setSelectedDate(shiftDateKey(selectedDate, 1))}
+          disabled={selectedDate >= localDateKey()}
+          aria-label="Next day"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
 
       {error ? <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
 
-      <section className="relative mt-6 overflow-hidden rounded-[32px] bg-ink px-5 pb-5 pt-7 text-white shadow-2xl shadow-ink/30">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full brand-gradient opacity-30 blur-3xl" aria-hidden="true" />
-        <CalorieRing consumed={totals.calories} goal={profile.calorieGoal} />
-        <div className="mt-6 rounded-3xl bg-white p-2.5">
+      <section className="mt-5 rounded-[32px] bg-[#1C1C1E] p-5 text-white shadow-xl shadow-ink/20">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-5xl font-bold tracking-tight">{Math.abs(remaining)}</p>
+            <p className="mt-1 text-sm font-medium text-white/60">{over ? 'Calories over' : 'Calories left'}</p>
+          </div>
+          <CalorieRing consumed={totals.calories} goal={profile.calorieGoal} />
+        </div>
+        <p className="mt-3 text-xs text-white/50">
+          {Math.round(totals.calories)} of {profile.calorieGoal} kcal eaten
+        </p>
+
+        <div className="mt-5">
           <MacroBars
             protein={totals.protein}
             carbs={totals.carbs}
@@ -85,7 +103,7 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => setLogOpen(true)}
-            className="rounded-full brand-gradient px-4 py-1.5 text-sm font-semibold text-white shadow-md shadow-coral/30"
+            className="rounded-full bg-ink px-4 py-1.5 text-sm font-semibold text-white shadow-md shadow-ink/20"
           >
             Add
           </button>
