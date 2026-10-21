@@ -25,6 +25,10 @@ export async function POST(request: Request) {
     )
     const user = rows[0]
     let devLink: string | undefined
+    let devNote: string | undefined
+    if (!user && SHOW_LINK_LOCALLY) {
+      devNote = 'No account uses this email on this local database. Sign up first, then try again.'
+    }
     if (user) {
       const token = randomBytes(32).toString('base64url')
       // Only the newest link works, so clear any earlier unused ones.
@@ -50,7 +54,7 @@ export async function POST(request: Request) {
       }
     }
 
-    return Response.json(devLink ? { message: MESSAGE, devLink } : { message: MESSAGE })
+    return Response.json({ message: MESSAGE, devLink, devNote })
   } catch (error) {
     return errorResponse(error)
   }

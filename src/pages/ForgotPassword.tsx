@@ -6,6 +6,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
   const [devLink, setDevLink] = useState<string>()
+  const [devNote, setDevNote] = useState<string>()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -14,9 +15,10 @@ export default function ForgotPassword() {
     setError('')
     setLoading(true)
     try {
-      const data = await api<{ message: string; devLink?: string }>('/auth/forgot', { method: 'POST', body: { email } })
+      const data = await api<{ message: string; devLink?: string; devNote?: string }>('/auth/forgot', { method: 'POST', body: { email } })
       setMessage(data.message)
       setDevLink(data.devLink)
+      setDevNote(data.devNote)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -44,6 +46,7 @@ export default function ForgotPassword() {
           <div className="rounded-2xl bg-mint/15 px-4 py-4 text-sm text-ink">
             <p className="font-semibold">Check your inbox</p>
             <p className="mt-1 text-neutral-600">{message}</p>
+            {devNote ? <p className="mt-4 rounded-xl bg-white p-3 text-xs font-medium text-amber">{devNote}</p> : null}
             {devLink ? (
               <div className="mt-4 rounded-xl bg-white p-3 text-xs text-neutral-600">
                 <p className="font-semibold text-amber">Local testing only: no email is sent in development.</p>
