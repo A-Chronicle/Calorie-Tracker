@@ -69,3 +69,13 @@ CREATE TABLE IF NOT EXISTS login_attempts (
 );
 
 CREATE INDEX IF NOT EXISTS login_attempts_window_start_idx ON login_attempts (window_start);
+
+-- One row per password reset link. Only the token's hash is stored; used_at makes a link single-use.
+CREATE TABLE IF NOT EXISTS password_resets (
+  token_hash TEXT PRIMARY KEY,
+  user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at    TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS password_resets_user_id_idx ON password_resets (user_id);

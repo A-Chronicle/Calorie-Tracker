@@ -64,8 +64,9 @@ Snap or search a meal, get calories and macros, and track your daily goal. Accou
    DATABASE_URL="postgres://..." npm run db:migrate
    ```
 
-5. Create a Blob store (Storage tab on the project) and connect it. This sets `BLOB_READ_WRITE_TOKEN`. Meal photos are stored as private blobs.
-6. Deploy. Session cookies are marked `Secure` in production, so the app must be served over HTTPS.
+5. Set up email for password resets: create a Resend account, verify a sending domain, then add `RESEND_API_KEY` and `EMAIL_FROM` to the project.
+6. Create a Blob store (Storage tab on the project) and connect it. This sets `BLOB_READ_WRITE_TOKEN`. Meal photos are stored as private blobs.
+7. Deploy. Session cookies are marked `Secure` in production, so the app must be served over HTTPS.
 
 ## Project layout
 
@@ -83,6 +84,8 @@ scripts/        migrate.mjs (applies server/schema.sql)
 | POST | `/api/auth/signup` | Create an account and start a session |
 | POST | `/api/auth/signin` | Start a session (rate-limited: 5 attempts per email and 50 per IP every 15 minutes) |
 | POST | `/api/auth/signout` | End the session |
+| POST | `/api/auth/forgot` | Email a single-use reset link (always the same response) |
+| POST | `/api/auth/reset` | Set a new password from a reset link; signs out all sessions |
 | GET | `/api/auth/me` | Current user or `null` |
 | GET | `/api/data` | Profile, meals and weights for the signed-in user |
 | PUT | `/api/profile` | Save profile and goals |

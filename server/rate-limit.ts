@@ -65,3 +65,9 @@ export async function registerSignInAttempt(email: string, ip: string): Promise<
 export async function clearSignInAttempts(email: string): Promise<void> {
   await query('DELETE FROM login_attempts WHERE attempt_key = $1', [`email:${email}`])
 }
+
+// Generic per-key limit for other public endpoints, such as password reset requests.
+export async function enforceLimit(key: string, limit: number, message: string): Promise<void> {
+  const counter = await countAttempt(key)
+  if (counter.attempts > limit) throw new HttpError(429, message, counter.retry_after)
+}

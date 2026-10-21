@@ -56,3 +56,12 @@ export const weightSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'date must be YYYY-MM-DD'),
   kg: z.number().min(20).max(400),
 })
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().toLowerCase().max(254),
+})
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Reset link is invalid').max(200),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(200),
+})

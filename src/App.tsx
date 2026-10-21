@@ -7,6 +7,8 @@ import Setup from './pages/Setup'
 import Dashboard from './pages/Dashboard'
 import Progress from './pages/Progress'
 import Profile from './pages/Profile'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, ready } = useAuth()
@@ -36,6 +38,8 @@ export default function App() {
             </PublicRoute>
           }
         />
+        <Route path="/forgot" element={<ForgotPassword />} />
+        <Route path="/reset" element={<ResetPassword />} />
         <Route path="/setup" element={<Setup />} />
         <Route element={<AppShell />}>
           <Route path="/dashboard" element={<Dashboard />} />

@@ -63,6 +63,12 @@ export default function SignIn() {
             />
           </label>
 
+          <div className="text-right">
+            <Link to="/forgot" className="text-sm font-medium text-neutral-500 hover:text-ink">
+              Forgot password?
+            </Link>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
