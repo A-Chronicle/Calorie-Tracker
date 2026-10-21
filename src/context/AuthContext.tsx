@@ -10,7 +10,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true
-    api<{ user: User | null }>('/auth/me')
+    api<{ user: User | null }>('/auth/session')
       .then((data) => {
         if (active) setUser(data.user)
       })
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signOut() {
     try {
-      await api('/auth/signout', { method: 'POST' })
+      await api('/auth/session', { method: 'DELETE' })
     } finally {
       setUser(null)
     }
