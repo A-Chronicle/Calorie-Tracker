@@ -37,10 +37,10 @@ export default function Dashboard() {
     <main className="px-5 pb-8 pt-8">
       <header className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-neutral-500">Hello, {user?.name.split(' ')[0]}</p>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-950">Today’s fuel</h1>
+          <p className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-semibold text-neutral-600 shadow-sm">👋 Hi, {user?.name.split(' ')[0]}</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight">Today’s <span className="brand-text">fuel</span></h1>
         </div>
-        <div className="flex items-center gap-1 rounded-full bg-white px-1 py-1 shadow-sm">
+        <div className="flex items-center gap-1 rounded-full bg-white px-1 py-1 shadow-md shadow-ink/5">
           <button
             type="button"
             className="rounded-full p-1.5 hover:bg-neutral-100"
@@ -64,9 +64,10 @@ export default function Dashboard() {
 
       {error ? <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
 
-      <section className="mt-6 rounded-[28px] bg-white px-4 py-6 shadow-sm">
+      <section className="relative mt-6 overflow-hidden rounded-[32px] bg-ink px-5 pb-5 pt-7 text-white shadow-2xl shadow-ink/30">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full brand-gradient opacity-30 blur-3xl" aria-hidden="true" />
         <CalorieRing consumed={totals.calories} goal={profile.calorieGoal} />
-        <div className="mt-6 px-1">
+        <div className="mt-6 rounded-3xl bg-white p-2.5">
           <MacroBars
             protein={totals.protein}
             carbs={totals.carbs}
@@ -80,11 +81,11 @@ export default function Dashboard() {
 
       <section className="mt-8">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold">Meals</h2>
+          <h2 className="text-xl font-bold">Meals</h2>
           <button
             type="button"
             onClick={() => setLogOpen(true)}
-            className="text-sm font-semibold text-neutral-950"
+            className="rounded-full brand-gradient px-4 py-1.5 text-sm font-semibold text-white shadow-md shadow-coral/30"
           >
             Add
           </button>

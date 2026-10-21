@@ -107,7 +107,7 @@ export default function Setup() {
 
         {error ? <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
 
-        <button type="submit" className="w-full rounded-2xl bg-neutral-950 py-3 text-sm font-semibold text-white">
+        <button type="submit" className="w-full rounded-2xl brand-gradient py-3 shadow-lg shadow-coral/25 text-sm font-semibold text-white">
           Start tracking
         </button>
       </form>

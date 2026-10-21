@@ -90,7 +90,7 @@ export default function Profile() {
         <p className="text-xs text-neutral-500">
           Current targets: {profile.calorieGoal} kcal · {profile.proteinGoal}g protein
         </p>
-        <button type="submit" className="w-full rounded-2xl bg-neutral-950 py-3 text-sm font-semibold text-white">
+        <button type="submit" className="w-full rounded-2xl brand-gradient py-3 shadow-lg shadow-coral/25 text-sm font-semibold text-white">
           Recalculate goals
         </button>
         {saved ? <p className="text-center text-sm text-emerald-600">Goals updated</p> : null}
@@ -128,7 +128,7 @@ function NumberField({
         step={step}
         required
         defaultValue={defaultValue}
-        className="mt-1 w-full rounded-2xl bg-[#f6f3ee] px-3 py-2.5 text-sm text-neutral-950 outline-none"
+        className="mt-1 w-full rounded-2xl bg-neutral-100 px-3 py-2.5 text-sm text-neutral-950 outline-none"
       />
     </label>
   )
@@ -151,7 +151,7 @@ function Select({
       <select
         name={name}
         defaultValue={defaultValue}
-        className="mt-1 w-full rounded-2xl bg-[#f6f3ee] px-3 py-2.5 text-sm text-neutral-950 outline-none"
+        className="mt-1 w-full rounded-2xl bg-neutral-100 px-3 py-2.5 text-sm text-neutral-950 outline-none"
       >
         {options.map(([value, text]) => (
           <option key={value} value={value}>

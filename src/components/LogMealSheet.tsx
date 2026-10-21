@@ -152,7 +152,7 @@ export default function LogMealSheet() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-      <div className="flex max-h-[92vh] w-full max-w-md flex-col rounded-t-3xl bg-[#f6f3ee] shadow-2xl">
+      <div className="flex max-h-[92vh] w-full max-w-md flex-col rounded-t-[32px] bg-[#fffaf6] shadow-2xl">
         <div className="flex items-center justify-between px-5 pt-4">
           <h2 className="text-lg font-bold">Log meal</h2>
           <button type="button" onClick={close} className="rounded-full p-2 hover:bg-white" aria-label="Close">
@@ -167,7 +167,7 @@ export default function LogMealSheet() {
               type="button"
               onClick={() => setMealType(type)}
               className={`flex-1 rounded-full px-2 py-1.5 text-xs font-semibold capitalize ${
-                mealType === type ? 'bg-neutral-950 text-white' : 'bg-white text-neutral-600'
+                mealType === type ? 'bg-ink text-white' : 'bg-white text-neutral-600'
               }`}
             >
               {type}
@@ -233,7 +233,7 @@ export default function LogMealSheet() {
                 type="button"
                 disabled={!photo || analyzing}
                 onClick={() => void analyzePhoto()}
-                className="w-full rounded-2xl bg-neutral-950 py-3 text-sm font-semibold text-white disabled:opacity-50"
+                className="w-full rounded-2xl brand-gradient py-3 text-sm font-semibold text-white shadow-lg shadow-coral/25 disabled:opacity-50"
               >
                 {analyzing ? 'Analyzing…' : 'Analyze meal'}
               </button>
@@ -242,7 +242,7 @@ export default function LogMealSheet() {
                 <button
                   type="button"
                   onClick={() => logFromItems(photo ? 'ai' : 'scan')}
-                  className="w-full rounded-2xl bg-emerald-600 py-3 text-sm font-semibold text-white"
+                  className="w-full rounded-2xl bg-mint py-3 text-sm font-semibold text-white shadow-lg shadow-mint/30"
                 >
                   Add {Math.round(totals.calories)} kcal
                 </button>
@@ -282,7 +282,7 @@ export default function LogMealSheet() {
                 <button
                   type="button"
                   onClick={() => logFromItems('search')}
-                  className="w-full rounded-2xl bg-neutral-950 py-3 text-sm font-semibold text-white"
+                  className="w-full rounded-2xl brand-gradient py-3 text-sm font-semibold text-white shadow-lg shadow-coral/25"
                 >
                   Add {Math.round(totals.calories)} kcal
                 </button>
@@ -305,7 +305,7 @@ export default function LogMealSheet() {
                 <Field label="Carbs" value={manualCarbs} onChange={setManualCarbs} type="number" placeholder="g" />
                 <Field label="Fat" value={manualFat} onChange={setManualFat} type="number" placeholder="g" />
               </div>
-              <button type="submit" className="w-full rounded-2xl bg-neutral-950 py-3 text-sm font-semibold text-white">
+              <button type="submit" className="w-full rounded-2xl brand-gradient py-3 text-sm font-semibold text-white shadow-lg shadow-coral/25">
                 Save meal
               </button>
             </form>

@@ -17,7 +17,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#f6f3ee] text-neutral-950">
+    <div className="min-h-screen text-ink">
       <Routes>
         <Route path="/" element={<Navigate to="/signin" replace />} />
         <Route

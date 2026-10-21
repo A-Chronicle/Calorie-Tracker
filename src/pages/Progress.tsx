@@ -59,7 +59,7 @@ export default function Progress() {
               <div key={day.date} className="flex flex-1 flex-col items-center gap-2">
                 <div className="flex h-32 w-full items-end rounded-full bg-neutral-100">
                   <div
-                    className={`w-full rounded-full ${over ? 'bg-red-400' : 'bg-neutral-950'}`}
+                    className={`w-full rounded-full ${over ? 'bg-coral' : 'brand-gradient'}`}
                     style={{ height: `${height}%` }}
                   />
                 </div>
@@ -83,10 +83,10 @@ export default function Progress() {
             step="0.1"
             value={kg}
             onChange={(e) => setKg(e.target.value)}
-            className="flex-1 rounded-2xl bg-[#f6f3ee] px-3 py-2.5 text-sm outline-none"
+            className="flex-1 rounded-2xl bg-neutral-100 px-3 py-2.5 text-sm outline-none"
             placeholder="kg"
           />
-          <button type="submit" className="rounded-2xl bg-neutral-950 px-4 text-sm font-semibold text-white">
+          <button type="submit" className="rounded-2xl brand-gradient px-4 shadow-lg shadow-coral/25 text-sm font-semibold text-white">
             Save
           </button>
         </form>

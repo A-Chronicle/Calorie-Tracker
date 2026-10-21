@@ -135,7 +135,7 @@ function TrackerStore({ email, children }: { email: string | null; children: Rea
   // Nothing renders until the account's data is here, so pages never mistake "not loaded yet" for "no profile".
   if (email && !loaded) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#f6f3ee] px-6">
+      <div className="flex min-h-screen flex-col items-center justify-center px-6">
         {loadError ? (
           <>
             <p className="text-center text-sm text-red-700">{loadError}</p>
@@ -145,7 +145,7 @@ function TrackerStore({ email, children }: { email: string | null; children: Rea
                 setLoadError('')
                 setAttempt((n) => n + 1)
               }}
-              className="mt-4 rounded-2xl bg-neutral-950 px-4 py-2 text-sm font-semibold text-white"
+              className="mt-4 rounded-2xl brand-gradient px-4 py-2 text-sm font-semibold text-white"
             >
               Try again
             </button>
