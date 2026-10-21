@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 export default function SignIn() {
   const { signIn } = useAuth()
@@ -25,66 +25,57 @@ export default function SignIn() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center px-6 py-12">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h1 className="text-center text-3xl font-bold tracking-tight text-gray-900">
-          Calorie Tracker
-        </h1>
-        <h2 className="mt-2 text-center text-lg text-gray-600">
-          Sign in to your account
-        </h2>
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">
+          CAL-c
+        </p>
+        <h1 className="mt-3 text-center text-3xl font-bold tracking-tight">Snap. Log. Stay on track.</h1>
+        <p className="mt-2 text-center text-sm text-neutral-500">Sign in to continue</p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {error && (
-            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 border border-red-200">
-              {error}
-            </div>
-          )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error ? (
+            <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+          ) : null}
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
+          <label className="block text-sm font-medium">
+            Email
             <input
-              id="email"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="mt-1 block w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5"
               placeholder="you@example.com"
             />
-          </div>
+          </label>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
+          <label className="block text-sm font-medium">
+            Password
             <input
-              id="password"
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="mt-1 block w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5"
               placeholder="Enter your password"
             />
-          </div>
+          </label>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full rounded-2xl bg-neutral-950 py-3 text-sm font-semibold text-white disabled:opacity-50"
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-neutral-500">
           Don&apos;t have an account?{' '}
-          <Link to="/signup" className="font-semibold text-blue-600 hover:text-blue-500">
+          <Link to="/signup" className="font-semibold text-neutral-950">
             Sign up
           </Link>
         </p>

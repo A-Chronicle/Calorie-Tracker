@@ -1,24 +1,23 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './context/AuthContext'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { useAuth } from './context/useAuth'
+import AppShell from './components/AppShell'
 import SignIn from './pages/SignIn'
 import SignUp from './pages/SignUp'
+import Setup from './pages/Setup'
 import Dashboard from './pages/Dashboard'
-
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
-  if (!user) return <Navigate to="/signin" replace />
-  return <>{children}</>
-}
+import Progress from './pages/Progress'
+import Profile from './pages/Profile'
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
+  const { user, ready } = useAuth()
+  if (!ready) return null
   if (user) return <Navigate to="/dashboard" replace />
   return <>{children}</>
 }
 
 export default function App() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="min-h-screen bg-[#f6f3ee] text-neutral-950">
       <Routes>
         <Route path="/" element={<Navigate to="/signin" replace />} />
         <Route
@@ -37,14 +36,12 @@ export default function App() {
             </PublicRoute>
           }
         />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/setup" element={<Setup />} />
+        <Route element={<AppShell />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/progress" element={<Progress />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
         <Route path="*" element={<Navigate to="/signin" replace />} />
       </Routes>
     </div>

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 export default function SignUp() {
   const { signUp } = useAuth()
@@ -14,14 +14,14 @@ export default function SignUp() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError('')
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters')
       return
     }
     setLoading(true)
     try {
       await signUp(name, email, password)
-      navigate('/dashboard')
+      navigate('/setup')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -30,81 +30,69 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center px-6 py-12">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h1 className="text-center text-3xl font-bold tracking-tight text-gray-900">
-          Calorie Tracker
-        </h1>
-        <h2 className="mt-2 text-center text-lg text-gray-600">
-          Create your account
-        </h2>
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">
+          CAL-c
+        </p>
+        <h1 className="mt-3 text-center text-3xl font-bold tracking-tight">Create your account</h1>
+        <p className="mt-2 text-center text-sm text-neutral-500">Photo meals. Daily ring. Real macros.</p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {error && (
-            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 border border-red-200">
-              {error}
-            </div>
-          )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error ? (
+            <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+          ) : null}
 
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Full name
-            </label>
+          <label className="block text-sm font-medium">
+            Full name
             <input
-              id="name"
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-              placeholder="John Doe"
+              className="mt-1 block w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5"
+              placeholder="Anshika"
             />
-          </div>
+          </label>
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
+          <label className="block text-sm font-medium">
+            Email
             <input
-              id="email"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="mt-1 block w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5"
               placeholder="you@example.com"
             />
-          </div>
+          </label>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
+          <label className="block text-sm font-medium">
+            Password
             <input
-              id="password"
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-              placeholder="At least 6 characters"
+              className="mt-1 block w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5"
+              placeholder="At least 8 characters"
             />
-          </div>
+          </label>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full rounded-2xl bg-neutral-950 py-3 text-sm font-semibold text-white disabled:opacity-50"
           >
-            {loading ? 'Creating account...' : 'Sign up'}
+            {loading ? 'Creating account…' : 'Sign up'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-neutral-500">
           Already have an account?{' '}
-          <Link to="/signin" className="font-semibold text-blue-600 hover:text-blue-500">
+          <Link to="/signin" className="font-semibold text-neutral-950">
             Sign in
           </Link>
         </p>

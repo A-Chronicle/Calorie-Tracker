@@ -1,66 +1,54 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { AuthContext, type User } from './auth-context'
+import { api } from '../lib/api'
 
-interface User {
-  name: string
-  email: string
-}
-
-interface AuthContextType {
-  user: User | null
-  signIn: (email: string, password: string) => Promise<void>
-  signUp: (name: string, email: string, password: string) => Promise<void>
-  signOut: () => void
-}
-
-const AuthContext = createContext<AuthContextType | null>(null)
-
+// The session lives in an HttpOnly cookie set by the server. The browser never sees the token,
+// so this context only mirrors who the server says is signed in.
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    const stored = localStorage.getItem('calorie-tracker-user')
-    if (stored) setUser(JSON.parse(stored))
+    let active = true
+    api<{ user: User | null }>('/auth/me')
+      .then((data) => {
+        if (active) setUser(data.user)
+      })
+      .catch(() => {
+        if (active) setUser(null)
+      })
+      .finally(() => {
+        if (active) setReady(true)
+      })
+    return () => {
+      active = false
+    }
   }, [])
 
   async function signIn(email: string, password: string) {
-    const stored = localStorage.getItem('calorie-tracker-users')
-    const users: Record<string, { name: string; password: string }> = stored ? JSON.parse(stored) : {}
-    const record = users[email]
-    if (!record || record.password !== password) {
-      throw new Error('Invalid email or password')
-    }
-    const u = { name: record.name, email }
-    localStorage.setItem('calorie-tracker-user', JSON.stringify(u))
-    setUser(u)
+    const data = await api<{ user: User }>('/auth/signin', { method: 'POST', body: { email, password } })
+    setUser(data.user)
   }
 
   async function signUp(name: string, email: string, password: string) {
-    const stored = localStorage.getItem('calorie-tracker-users')
-    const users: Record<string, { name: string; password: string }> = stored ? JSON.parse(stored) : {}
-    if (users[email]) {
-      throw new Error('An account with this email already exists')
-    }
-    users[email] = { name, password }
-    localStorage.setItem('calorie-tracker-users', JSON.stringify(users))
-    const u = { name, email }
-    localStorage.setItem('calorie-tracker-user', JSON.stringify(u))
-    setUser(u)
+    const data = await api<{ user: User }>('/auth/signup', {
+      method: 'POST',
+      body: { name, email, password },
+    })
+    setUser(data.user)
   }
 
-  function signOut() {
-    localStorage.removeItem('calorie-tracker-user')
-    setUser(null)
+  async function signOut() {
+    try {
+      await api('/auth/signout', { method: 'POST' })
+    } finally {
+      setUser(null)
+    }
   }
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, ready, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   )
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
-  return ctx
 }

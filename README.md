@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
+# CAL-c
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Snap or search a meal, get calories and macros, and track your daily goal. Accounts and data live on the server in Postgres.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Frontend:** React 19, Vite, TypeScript, Tailwind CSS v4, React Router
+- **API:** Vercel Functions in `api/`, shared server code in `server/`
+- **Database:** Postgres (Neon via the Vercel Marketplace in production)
+- **Auth:** email and password (scrypt hashes), HttpOnly session cookie
+- **Photo analysis:** Vercel AI Gateway (vision model)
 
-## React Compiler
+## Local setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Install dependencies:
 
-## Expanding the ESLint configuration
+   ```bash
+   npm install
+   ```
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+2. Create a local `.env` from the template and fill it in:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+   ```bash
+   cp .env.example .env
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+   - `DATABASE_URL`: a Postgres connection string, for example `postgres://USER:PASSWORD@localhost:5432/calorie_tracker`.
+   - `AI_GATEWAY_API_KEY`: needed only for photo analysis. Without it, photo analysis returns a clear error and the search and manual tabs still work.
+   - `BLOB_READ_WRITE_TOKEN` (optional locally): a Vercel Blob token. Without it, meal photos are kept in `.local-photos/` (git-ignored). Production requires it.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+3. Create the tables:
+
+   ```bash
+   npm run db:migrate
+   ```
+
+   The schema in `server/schema.sql` is idempotent, so it's safe to run again.
+
+4. Start the app:
+
+   ```bash
+   npm run dev
+   ```
+
+   The API runs inside the Vite dev server under `/api`, routed the same way as on Vercel.
+
+## Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Vite dev server with the API |
+| `npm run build` | Type-check (app, API, config) and build the client |
+| `npm run lint` | ESLint |
+| `npm run db:migrate` | Apply `server/schema.sql` to `DATABASE_URL` |
+
+## Deploying to Vercel
+
+1. Import the repo into Vercel.
+2. Add a Postgres database from the Marketplace (Neon). It sets `DATABASE_URL` for the project.
+3. Add `AI_GATEWAY_API_KEY` to the project environment variables.
+4. Apply the schema to the production database once, with the production `DATABASE_URL`:
+
+   ```bash
+   DATABASE_URL="postgres://..." npm run db:migrate
+   ```
+
+5. Create a Blob store (Storage tab on the project) and connect it. This sets `BLOB_READ_WRITE_TOKEN`. Meal photos are stored as private blobs.
+6. Deploy. Session cookies are marked `Secure` in production, so the app must be served over HTTPS.
+
+## Project layout
+
+```
+api/            Route handlers (one file per endpoint, e.g. api/meals.ts)
+server/         DB access, auth, validation schemas, row mapping, schema.sql
+src/            React app (pages, components, contexts, lib/api.ts client)
+scripts/        migrate.mjs (applies server/schema.sql)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### API
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Method | Route | Purpose |
+| --- | --- | --- |
+| POST | `/api/auth/signup` | Create an account and start a session |
+| POST | `/api/auth/signin` | Start a session (rate-limited: 5 attempts per email and 50 per IP every 15 minutes) |
+| POST | `/api/auth/signout` | End the session |
+| GET | `/api/auth/me` | Current user or `null` |
+| GET | `/api/data` | Profile, meals and weights for the signed-in user |
+| PUT | `/api/profile` | Save profile and goals |
+| POST | `/api/photos` | Upload a meal photo (JPEG, PNG or WebP, up to 3 MB); returns a key |
+| GET | `/api/photo?key=` | Read one of your photos (private) |
+| POST | `/api/meals` | Log a meal, optionally with a `photoKey` |
+| DELETE | `/api/meals?id=` | Delete one of your meals |
+| PUT | `/api/weights` | Log a weigh-in for a date |
+| POST | `/api/analyze-food` | Estimate a meal from a photo (signed in only) |
