@@ -4,6 +4,7 @@ import { useAuth } from '../context/useAuth'
 import { useTracker } from '../context/useTracker'
 import { buildGoals } from '../lib/tdee'
 import type { ActivityLevel, Goal, Sex } from '../types'
+import AuthLayout, { AuthButton, AuthError, AuthLabel } from '../components/AuthLayout'
 
 export default function Setup() {
   const { user, ready } = useAuth()
@@ -53,64 +54,65 @@ export default function Setup() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-10">
-      <p className="text-sm font-medium text-neutral-500">Almost there</p>
-      <h1 className="mt-1 text-3xl font-bold tracking-tight">Set your daily target</h1>
-      <p className="mt-2 text-sm text-neutral-500">
-        We’ll estimate calories from your stats, the same way Cal AI starts with a personal goal.
-      </p>
+    <AuthLayout
+      title={
+        <>
+          Set your <span className="brand-text">daily target</span>
+        </>
+      }
+      subtitle="We estimate your calories from your stats. You can change this anytime."
+    >
+      <form onSubmit={onSubmit} onChange={onChange} className="space-y-4">
+        <div className="grid grid-cols-2 gap-3">
+          <AuthLabel label="Sex">
+            <select name="sex" className="field text-sm normal-case tracking-normal">
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+            </select>
+          </AuthLabel>
+          <AuthLabel label="Age">
+            <input name="age" type="number" required min={13} className="field text-sm normal-case tracking-normal" />
+          </AuthLabel>
+          <AuthLabel label="Height (cm)">
+            <input name="heightCm" type="number" required min={100} className="field text-sm normal-case tracking-normal" />
+          </AuthLabel>
+          <AuthLabel label="Weight (kg)">
+            <input name="weightKg" type="number" step="0.1" required min={30} className="field text-sm normal-case tracking-normal" />
+          </AuthLabel>
+        </div>
 
-      <form onSubmit={onSubmit} onChange={onChange} className="mt-8 space-y-4">
-        <label className="block text-sm font-medium">
-          Sex
-          <select name="sex" className="mt-1 w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5">
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-          </select>
-        </label>
-        <label className="block text-sm font-medium">
-          Age
-          <input name="age" type="number" required min={13} className="mt-1 w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5" />
-        </label>
-        <label className="block text-sm font-medium">
-          Height (cm)
-          <input name="heightCm" type="number" required min={100} className="mt-1 w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5" />
-        </label>
-        <label className="block text-sm font-medium">
-          Weight (kg)
-          <input name="weightKg" type="number" step="0.1" required min={30} className="mt-1 w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5" />
-        </label>
-        <label className="block text-sm font-medium">
-          Activity
-          <select name="activity" defaultValue="moderate" className="mt-1 w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5">
+        <AuthLabel label="Activity">
+          <select name="activity" defaultValue="moderate" className="field text-sm normal-case tracking-normal">
             <option value="sedentary">Mostly sitting</option>
             <option value="light">Light exercise 1–3 days</option>
             <option value="moderate">Exercise 3–5 days</option>
             <option value="active">Hard exercise 6–7 days</option>
             <option value="very_active">Physical job + training</option>
           </select>
-        </label>
-        <label className="block text-sm font-medium">
-          Goal
-          <select name="goal" defaultValue="lose" className="mt-1 w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5">
+        </AuthLabel>
+
+        <AuthLabel label="Goal">
+          <select name="goal" defaultValue="lose" className="field text-sm normal-case tracking-normal">
             <option value="lose">Lose fat</option>
             <option value="maintain">Maintain</option>
             <option value="gain">Build muscle</option>
           </select>
-        </label>
+        </AuthLabel>
 
         {preview ? (
-          <p className="rounded-2xl bg-white px-4 py-3 text-sm">
-            Suggested target: <span className="font-bold">{preview} kcal/day</span>
-          </p>
+          <div className="animate-rise rounded-3xl border border-white/10 bg-panel p-4 text-center">
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/45">Suggested target</p>
+            <p className="mt-1 bg-[linear-gradient(120deg,#ff5a4e,#ffb020)] bg-clip-text text-4xl font-black text-transparent">
+              {preview}
+              <span className="ml-1 text-base text-white/50">kcal/day</span>
+            </p>
+          </div>
         ) : null}
 
-        {error ? <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
+        {error ? <AuthError>{error}</AuthError> : null}
 
-        <button type="submit" className="w-full rounded-2xl bg-ink py-3 shadow-lg text-sm font-semibold text-white">
-          Start tracking
-        </button>
+        <AuthButton loadingText="Saving…">Start tracking</AuthButton>
       </form>
-    </div>
+    </AuthLayout>
   )
 }

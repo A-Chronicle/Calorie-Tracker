@@ -44,10 +44,13 @@ export default function Progress() {
   const recentWeights = weights.slice(-7)
 
   return (
-    <main className="px-5 pb-8 pt-8">
-      <h1 className="text-3xl font-bold tracking-tight">Progress</h1>
+    <main className="px-5 pb-8 pt-7">
+      <p className="text-sm font-medium text-white/50">Your journey</p>
+      <h1 className="text-3xl font-extrabold tracking-tight">Progress</h1>
 
-      {error ? <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
+      {error ? (
+        <p className="mt-4 rounded-2xl border border-coral/30 bg-coral/10 px-4 py-3 text-sm text-coral">{error}</p>
+      ) : null}
 
       <section className="mt-6 grid grid-cols-2 gap-3">
         <MetricCard
@@ -55,23 +58,27 @@ export default function Progress() {
           value={`${avg}`}
           sub="kcal per logged day"
           fraction={goal ? Math.min(avg / goal, 1) : 0}
+          from="#ff5a4e"
+          to="#ffb020"
         />
         <MetricCard
           label="Days logged"
           value={`${loggedDays}/${range}`}
           sub={latestWeight ? `Last weight ${latestWeight} kg` : 'No weight yet'}
           fraction={range ? loggedDays / range : 0}
+          from="#7c5cff"
+          to="#3d8bff"
         />
       </section>
 
-      <div className="mt-6 flex rounded-full bg-white p-1 shadow-sm">
+      <div className="glass mt-5 flex rounded-full p-1">
         {([7, 30] as const).map((value) => (
           <button
             key={value}
             type="button"
             onClick={() => setRange(value)}
-            className={`flex-1 rounded-full py-2 text-sm font-semibold transition-colors ${
-              range === value ? 'bg-ink text-white' : 'text-neutral-500'
+            className={`flex-1 rounded-full py-2 text-sm font-bold transition-all ${
+              range === value ? 'brand-gradient text-white shadow-lg shadow-coral/25' : 'text-white/50 hover:text-white'
             }`}
           >
             {value} Days
@@ -79,10 +86,12 @@ export default function Progress() {
         ))}
       </div>
 
-      <section className="mt-4 rounded-[28px] bg-white p-5 shadow-sm">
+      <section className="mt-4 rounded-[28px] border border-white/[0.07] bg-panel p-5">
         <div className="flex items-center justify-between">
           <p className="font-bold">Calories</p>
-          {goal ? <p className="text-xs font-semibold text-neutral-500">Goal {goal} kcal</p> : null}
+          {goal ? (
+            <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-white/70">Goal {goal}</span>
+          ) : null}
         </div>
         <div className="mt-5 flex h-44 items-end gap-1.5">
           {daily.map((day) => {
@@ -92,13 +101,15 @@ export default function Progress() {
               <div key={day.date} className="flex flex-1 flex-col items-center gap-2">
                 <div className="flex h-36 w-full items-end">
                   <div
-                    className={`w-full rounded-full ${over ? 'bg-coral' : 'bg-ink'}`}
+                    className={`w-full rounded-full transition-[height] duration-700 ${
+                      over ? 'bg-[linear-gradient(180deg,#ff5a4e,#ff8a3d)]' : 'bg-[linear-gradient(180deg,#7c5cff,#3d8bff)]'
+                    }`}
                     style={{ height: `${height}%` }}
                     title={`${day.date}: ${day.calories} kcal`}
                   />
                 </div>
                 {range === 7 || day.date.endsWith('01') || day.date.endsWith('15') ? (
-                  <span className="text-[10px] font-medium text-neutral-500">{day.date.slice(8)}</span>
+                  <span className="text-[10px] font-semibold text-white/40">{day.date.slice(8)}</span>
                 ) : (
                   <span className="text-[10px]" aria-hidden="true">&nbsp;</span>
                 )}
@@ -108,7 +119,7 @@ export default function Progress() {
         </div>
       </section>
 
-      <section className="mt-4 rounded-[28px] bg-white p-5 shadow-sm">
+      <section className="mt-4 rounded-[28px] border border-white/[0.07] bg-panel p-5">
         <p className="font-bold">Weight</p>
         <form onSubmit={onWeight} className="mt-3 flex gap-2">
           <input
@@ -116,27 +127,27 @@ export default function Progress() {
             step="0.1"
             value={kg}
             onChange={(e) => setKg(e.target.value)}
-            className="flex-1 rounded-2xl bg-neutral-100 px-3 py-2.5 text-sm outline-none"
+            className="field text-sm"
             placeholder="kg"
           />
-          <button type="submit" className="rounded-2xl bg-ink px-5 text-sm font-semibold text-white">
+          <button type="submit" className="brand-gradient shrink-0 rounded-2xl px-5 text-sm font-bold text-white shadow-lg shadow-coral/25">
             Save
           </button>
         </form>
         {recentWeights.length ? (
-          <ul className="mt-4 space-y-2">
+          <ul className="mt-4 divide-y divide-white/[0.06]">
             {recentWeights
               .slice()
               .reverse()
               .map((log) => (
-                <li key={log.date} className="flex justify-between text-sm">
-                  <span className="text-neutral-500">{log.date}</span>
-                  <span className="font-semibold">{log.kg} kg</span>
+                <li key={log.date} className="flex justify-between py-2.5 text-sm">
+                  <span className="text-white/45">{log.date}</span>
+                  <span className="font-bold">{log.kg} kg</span>
                 </li>
               ))}
           </ul>
         ) : (
-          <p className="mt-3 text-sm text-neutral-400">No weigh-ins yet.</p>
+          <p className="mt-3 text-sm text-white/40">No weigh-ins yet.</p>
         )}
       </section>
     </main>
@@ -148,39 +159,50 @@ function MetricCard({
   value,
   sub,
   fraction,
+  from,
+  to,
 }: {
   label: string
   value: string
   sub: string
   fraction: number
+  from: string
+  to: string
 }) {
-  const size = 64
-  const stroke = 7
+  const size = 72
+  const stroke = 8
   const radius = (size - stroke) / 2
   const circumference = 2 * Math.PI * radius
+  const id = `metric-${label.replace(/\s+/g, '-')}`
 
   return (
-    <div className="rounded-[24px] bg-white p-4 shadow-sm">
+    <div className="rounded-[24px] border border-white/[0.07] bg-panel p-4">
       <div className="relative mx-auto" style={{ width: size, height: size }}>
         <svg width={size} height={size} className="-rotate-90" aria-hidden="true">
-          <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#EDEDF0" strokeWidth={stroke} />
+          <defs>
+            <linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={from} />
+              <stop offset="100%" stopColor={to} />
+            </linearGradient>
+          </defs>
+          <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={stroke} />
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="#1C1C1E"
+            stroke={`url(#${id})`}
             strokeWidth={stroke}
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={circumference * (1 - Math.min(fraction, 1))}
-            className="transition-[stroke-dashoffset] duration-500"
+            className="transition-[stroke-dashoffset] duration-700"
           />
         </svg>
       </div>
-      <p className="mt-3 text-center text-xs font-medium text-neutral-500">{label}</p>
-      <p className="mt-0.5 text-center text-xl font-bold">{value}</p>
-      <p className="mt-1 text-center text-[11px] text-neutral-400">{sub}</p>
+      <p className="mt-3 text-center text-xs font-semibold text-white/50">{label}</p>
+      <p className="mt-0.5 text-center text-2xl font-extrabold">{value}</p>
+      <p className="mt-1 text-center text-[11px] text-white/35">{sub}</p>
     </div>
   )
 }

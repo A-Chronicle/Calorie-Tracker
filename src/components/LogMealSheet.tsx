@@ -151,11 +151,14 @@ export default function LogMealSheet() {
   if (!logOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-      <div className="flex max-h-[92vh] w-full max-w-md flex-col rounded-t-[32px] bg-[#fffaf6] shadow-2xl">
-        <div className="flex items-center justify-between px-5 pt-4">
-          <h2 className="text-lg font-bold">Log meal</h2>
-          <button type="button" onClick={close} className="rounded-full p-2 hover:bg-white" aria-label="Close">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm animate-rise">
+      <div className="flex max-h-[92vh] w-full max-w-md flex-col rounded-t-[32px] border-t border-white/10 bg-[#14141d] shadow-2xl">
+        <div className="flex items-center justify-between px-5 pt-5">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/40">Add to today</p>
+            <h2 className="text-2xl font-extrabold tracking-tight">Log meal</h2>
+          </div>
+          <button type="button" onClick={close} className="rounded-full bg-white/10 p-2 text-white/80 transition-colors hover:bg-white/20 hover:text-white" aria-label="Close">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -166,8 +169,8 @@ export default function LogMealSheet() {
               key={type}
               type="button"
               onClick={() => setMealType(type)}
-              className={`flex-1 rounded-full px-2 py-1.5 text-xs font-semibold capitalize ${
-                mealType === type ? 'bg-ink text-white' : 'bg-white text-neutral-600'
+              className={`flex-1 rounded-full px-2 py-1.5 text-xs font-semibold capitalize transition-all ${
+                mealType === type ? 'brand-gradient text-white shadow-lg shadow-coral/25' : 'bg-white/5 text-white/50 hover:text-white'
               }`}
             >
               {type}
@@ -175,14 +178,14 @@ export default function LogMealSheet() {
           ))}
         </div>
 
-        <div className="mt-4 flex gap-2 px-5">
+        <div className="mt-4 flex gap-1 rounded-full bg-white/5 p-1 mx-5">
           {(['scan', 'search', 'manual'] as const).map((id) => (
             <button
               key={id}
               type="button"
               onClick={() => setTab(id)}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium capitalize ${
-                tab === id ? 'bg-white text-neutral-950 shadow-sm' : 'text-neutral-500'
+              className={`flex-1 rounded-full px-3 py-2 text-sm font-semibold capitalize transition-colors ${
+                tab === id ? 'bg-white/15 text-white shadow-sm' : 'text-white/45 hover:text-white/80'
               }`}
             >
               {id}
@@ -192,7 +195,7 @@ export default function LogMealSheet() {
 
         <div className="mt-4 flex-1 overflow-y-auto px-5 pb-8">
           {error ? (
-            <p className="mb-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+            <p className="mb-3 rounded-2xl border border-coral/30 bg-coral/10 px-3 py-2 text-sm text-coral">{error}</p>
           ) : null}
 
           {tab === 'scan' ? (
@@ -211,15 +214,17 @@ export default function LogMealSheet() {
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="flex h-44 w-full flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-neutral-300 bg-white"
+                className="flex h-48 w-full flex-col items-center justify-center overflow-hidden rounded-[28px] border border-dashed border-white/15 bg-white/[0.03] transition-colors hover:border-coral/50"
               >
                 {photo ? (
                   <img src={photo} alt="Meal preview" className="h-full w-full object-cover" />
                 ) : (
                   <>
-                    <Camera className="h-8 w-8 text-neutral-400" />
-                    <p className="mt-2 text-sm font-medium text-neutral-600">Snap or upload a meal</p>
-                    <p className="text-xs text-neutral-400">Cal AI-style photo estimate</p>
+                    <span className="brand-gradient flex h-14 w-14 items-center justify-center rounded-full shadow-lg shadow-coral/30">
+                      <Camera className="h-6 w-6 text-white" />
+                    </span>
+                    <p className="mt-3 text-sm font-bold text-white">Snap or upload a meal</p>
+                    <p className="text-xs text-white/40">We estimate calories from the photo</p>
                   </>
                 )}
               </button>
@@ -227,13 +232,13 @@ export default function LogMealSheet() {
                 value={hint}
                 onChange={(e) => setHint(e.target.value)}
                 placeholder="Optional hint: 2 roti and dal"
-                className="w-full rounded-2xl border-0 bg-white px-4 py-3 text-sm outline-none ring-1 ring-black/5"
+                className="field text-sm"
               />
               <button
                 type="button"
                 disabled={!photo || analyzing}
                 onClick={() => void analyzePhoto()}
-                className="w-full rounded-2xl bg-ink py-3 text-sm font-semibold text-white shadow-lg disabled:opacity-50"
+                className="w-full rounded-2xl bg-white py-3.5 text-sm font-bold text-night shadow-lg transition-transform active:scale-[0.99] disabled:opacity-40"
               >
                 {analyzing ? 'Analyzing…' : 'Analyze meal'}
               </button>
@@ -242,7 +247,7 @@ export default function LogMealSheet() {
                 <button
                   type="button"
                   onClick={() => logFromItems(photo ? 'ai' : 'scan')}
-                  className="w-full rounded-2xl bg-mint py-3 text-sm font-semibold text-white shadow-lg shadow-mint/30"
+                  className="w-full rounded-2xl bg-mint py-3.5 text-sm font-bold text-night shadow-lg shadow-mint/25 transition-transform active:scale-[0.99]"
                 >
                   Add {Math.round(totals.calories)} kcal
                 </button>
@@ -252,13 +257,13 @@ export default function LogMealSheet() {
 
           {tab === 'search' ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 rounded-2xl bg-white px-3 py-2 ring-1 ring-black/5">
-                <Search className="h-4 w-4 text-neutral-400" />
+              <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3.5 py-2.5 focus-within:border-coral/60">
+                <Search className="h-4 w-4 text-white/40" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search roti, eggs, biryani…"
-                  className="w-full bg-transparent py-1 text-sm outline-none"
+                  className="w-full bg-transparent py-1 text-sm text-white outline-none placeholder:text-white/30"
                 />
               </div>
               <div className="space-y-2">
@@ -267,13 +272,13 @@ export default function LogMealSheet() {
                     key={food.id}
                     type="button"
                     onClick={() => addFoodFromSearch(food.id)}
-                    className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3 text-left ring-1 ring-black/4"
+                    className="flex w-full items-center justify-between rounded-2xl border border-white/[0.07] bg-panel px-4 py-3 text-left transition-colors hover:border-coral/40"
                   >
                     <span>
-                      <span className="block font-medium text-neutral-900">{food.name}</span>
-                      <span className="text-xs text-neutral-500">{food.serving}</span>
+                      <span className="block font-semibold text-white">{food.name}</span>
+                      <span className="text-xs text-white/40">{food.serving}</span>
                     </span>
-                    <span className="text-sm font-semibold">{food.calories} kcal</span>
+                    <span className="rounded-full bg-amber/15 px-2.5 py-1 text-xs font-bold text-amber">{food.calories} kcal</span>
                   </button>
                 ))}
               </div>
@@ -282,7 +287,7 @@ export default function LogMealSheet() {
                 <button
                   type="button"
                   onClick={() => logFromItems('search')}
-                  className="w-full rounded-2xl bg-ink py-3 text-sm font-semibold text-white shadow-lg"
+                  className="w-full rounded-2xl bg-white py-3.5 text-sm font-bold text-night shadow-lg transition-transform active:scale-[0.99]"
                 >
                   Add {Math.round(totals.calories)} kcal
                 </button>
@@ -305,7 +310,7 @@ export default function LogMealSheet() {
                 <Field label="Carbs" value={manualCarbs} onChange={setManualCarbs} type="number" placeholder="g" />
                 <Field label="Fat" value={manualFat} onChange={setManualFat} type="number" placeholder="g" />
               </div>
-              <button type="submit" className="w-full rounded-2xl bg-ink py-3 text-sm font-semibold text-white shadow-lg">
+              <button type="submit" className="brand-gradient w-full rounded-2xl py-3.5 text-sm font-bold text-white shadow-lg shadow-coral/25 transition-transform active:scale-[0.99]">
                 Save meal
               </button>
             </form>
@@ -324,17 +329,17 @@ function ItemList({
   totals: { calories: number; protein: number; carbs: number; fat: number }
 }) {
   return (
-    <div className="rounded-2xl bg-white p-4 ring-1 ring-black/4">
+    <div className="rounded-2xl border border-white/[0.07] bg-panel p-4">
       {items.map((item, index) => (
         <div key={`${item.name}-${index}`} className="flex justify-between py-1.5 text-sm">
-          <span className="text-neutral-700">
+          <span className="text-white/80">
             {item.name}
-            <span className="ml-1 text-xs text-neutral-400">{item.quantity}</span>
+            <span className="ml-1 text-xs text-white/35">{item.quantity}</span>
           </span>
-          <span className="font-medium">{item.calories} kcal</span>
+          <span className="font-semibold text-white">{item.calories} kcal</span>
         </div>
       ))}
-      <p className="mt-2 border-t border-neutral-100 pt-2 text-xs text-neutral-500">
+      <p className="mt-2 border-t border-white/10 pt-2 text-xs font-medium text-white/50">
         P {Math.round(totals.protein)}g · C {Math.round(totals.carbs)}g · F {Math.round(totals.fat)}g
       </p>
     </div>
@@ -355,14 +360,14 @@ function Field({
   placeholder?: string
 }) {
   return (
-    <label className="block text-xs font-medium text-neutral-500">
-      {label}
+    <label className="block text-xs font-semibold uppercase tracking-wide text-white/45">
+      <span className="mb-1.5 block">{label}</span>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-2xl bg-white px-3 py-2.5 text-sm text-neutral-950 outline-none ring-1 ring-black/5"
+        className="field text-sm"
       />
     </label>
   )

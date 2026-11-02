@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
+import AuthLayout, { AuthButton, AuthError, AuthLabel } from '../components/AuthLayout'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -27,68 +28,55 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col justify-center px-6 py-12">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ink text-lg font-extrabold text-white shadow-xl">
-          C
+    <AuthLayout
+      title={
+        <>
+          Forgot your <span className="brand-text">password?</span>
+        </>
+      }
+      subtitle="Enter your email and we'll send you a link to choose a new one."
+    >
+      {message ? (
+        <div className="rounded-3xl border border-mint/30 bg-mint/10 p-5 text-sm">
+          <p className="font-bold text-mint">Check your inbox</p>
+          <p className="mt-1 text-white/70">{message}</p>
+          {devNote ? <p className="mt-4 rounded-2xl bg-white/5 p-3 text-xs font-medium text-amber">{devNote}</p> : null}
+          {devLink ? (
+            <div className="mt-4 rounded-2xl bg-white/5 p-3 text-xs text-white/60">
+              <p className="font-semibold text-amber">Local testing only: no email is sent in development.</p>
+              <a href={devLink} className="mt-2 block break-all font-semibold text-white underline">
+                Open reset link
+              </a>
+            </div>
+          ) : null}
         </div>
-        <p className="mt-3 text-center text-sm font-bold tracking-[0.3em] text-neutral-500">CAL-c</p>
-        <h1 className="mt-4 text-center text-3xl font-bold tracking-tight">
-          Forgot your <span>password?</span>
-        </h1>
-        <p className="mt-2 text-center text-sm text-neutral-500">
-          Enter your email and we&apos;ll send you a link to choose a new one.
-        </p>
-      </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error ? <AuthError>{error}</AuthError> : null}
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
-        {message ? (
-          <div className="rounded-2xl bg-mint/15 px-4 py-4 text-sm text-ink">
-            <p className="font-semibold">Check your inbox</p>
-            <p className="mt-1 text-neutral-600">{message}</p>
-            {devNote ? <p className="mt-4 rounded-xl bg-white p-3 text-xs font-medium text-amber">{devNote}</p> : null}
-            {devLink ? (
-              <div className="mt-4 rounded-xl bg-white p-3 text-xs text-neutral-600">
-                <p className="font-semibold text-amber">Local testing only: no email is sent in development.</p>
-                <a href={devLink} className="mt-2 block break-all font-medium text-ink underline">
-                  Open reset link
-                </a>
-              </div>
-            ) : null}
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error ? <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
+          <AuthLabel label="Email">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="field text-sm normal-case tracking-normal"
+              placeholder="you@example.com"
+            />
+          </AuthLabel>
 
-            <label className="block text-sm font-medium">
-              Email
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5 transition focus:ring-2 focus:ring-ink/30"
-                placeholder="you@example.com"
-              />
-            </label>
+          <AuthButton loading={loading} loadingText="Sending…">
+            Send reset link
+          </AuthButton>
+        </form>
+      )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-2xl bg-ink py-3 text-sm font-semibold text-white shadow-lg disabled:opacity-50"
-            >
-              {loading ? 'Sending…' : 'Send reset link'}
-            </button>
-          </form>
-        )}
-
-        <p className="mt-6 text-center text-sm text-neutral-500">
-          Remembered it?{' '}
-          <Link to="/signin" className="font-semibold text-ink">
-            Back to sign in
-          </Link>
-        </p>
-      </div>
-    </div>
+      <p className="mt-8 text-center text-sm text-white/50">
+        Remembered it?{' '}
+        <Link to="/signin" className="font-bold text-white hover:text-coral">
+          Back to sign in
+        </Link>
+      </p>
+    </AuthLayout>
   )
 }

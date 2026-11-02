@@ -9,59 +9,40 @@ interface MacroBarsProps {
   fatGoal: number
 }
 
-const PROTEIN = '#F0736B'
-const CARBS = '#F2A65A'
-const FAT = '#5C8DF6'
-
-function MacroRing({
+function MacroTile({
   label,
   value,
   goal,
-  color,
   Icon,
 }: {
   label: string
   value: number
   goal: number
-  color: string
   Icon: LucideIcon
 }) {
-  const size = 58
-  const stroke = 6
-  const radius = (size - stroke) / 2
-  const circumference = 2 * Math.PI * radius
   const ratio = goal > 0 ? Math.min(value / goal, 1) : 0
   const diff = Math.round(goal - value)
   const over = diff < 0
 
   return (
-    <div className="flex flex-1 flex-col items-center rounded-3xl bg-white/[0.07] px-2 py-3">
-      <p className="text-base font-bold text-white">
-        {Math.abs(diff)}g
-      </p>
-      <p className="text-[11px] font-medium text-white/60">
-        {label} {over ? <span className="font-bold text-white">over</span> : 'left'}
-      </p>
-      <div className="relative mt-2" style={{ width: size, height: size }}>
-        <svg width={size} height={size} className="-rotate-90" aria-hidden="true">
-          <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={stroke} />
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke={color}
-            strokeWidth={stroke}
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference * (1 - ratio)}
-            className="transition-[stroke-dashoffset] duration-500"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Icon className="h-4 w-4" style={{ color }} />
-        </div>
+    <div className="flex-1 rounded-2xl bg-white/15 p-3 backdrop-blur-sm">
+      <div className="flex items-center gap-1.5 text-white/80">
+        <Icon className="h-3.5 w-3.5" />
+        <span className="text-[11px] font-semibold uppercase tracking-wide">{label}</span>
       </div>
+      <p className="mt-1.5 text-lg font-bold leading-none text-white">
+        {Math.round(value)}
+        <span className="text-xs font-semibold text-white/60">g</span>
+      </p>
+      <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/20">
+        <div
+          className="h-full rounded-full bg-white transition-[width] duration-700 ease-out"
+          style={{ width: `${ratio * 100}%` }}
+        />
+      </div>
+      <p className="mt-1.5 text-[11px] font-medium text-white/70">
+        {over ? `${Math.abs(diff)}g over` : `${diff}g left`}
+      </p>
     </div>
   )
 }
@@ -75,10 +56,10 @@ export default function MacroBars({
   fatGoal,
 }: MacroBarsProps) {
   return (
-    <div className="flex gap-2.5">
-      <MacroRing label="Protein" value={protein} goal={proteinGoal} color={PROTEIN} Icon={Zap} />
-      <MacroRing label="Carbs" value={carbs} goal={carbsGoal} color={CARBS} Icon={Wheat} />
-      <MacroRing label="Fats" value={fat} goal={fatGoal} color={FAT} Icon={Droplet} />
+    <div className="flex gap-2">
+      <MacroTile label="Protein" value={protein} goal={proteinGoal} Icon={Zap} />
+      <MacroTile label="Carbs" value={carbs} goal={carbsGoal} Icon={Wheat} />
+      <MacroTile label="Fats" value={fat} goal={fatGoal} Icon={Droplet} />
     </div>
   )
 }

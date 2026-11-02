@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
+import AuthLayout, { AuthButton, AuthError, AuthLabel } from '../components/AuthLayout'
 
 export default function SignIn() {
   const { signIn } = useAuth()
@@ -25,66 +26,58 @@ export default function SignIn() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col justify-center px-6 py-12">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ink text-lg font-extrabold text-white shadow-xl">C</div>
-        <p className="mt-3 text-center text-sm font-bold tracking-[0.3em] text-neutral-500">CAL-c</p>
-        <h1 className="mt-3 text-center text-3xl font-bold tracking-tight">Snap. Log. <span>Stay on track.</span></h1>
-        <p className="mt-2 text-center text-sm text-neutral-500">Sign in to continue</p>
-      </div>
+    <AuthLayout
+      title={
+        <>
+          Snap. Log.
+          <br />
+          <span className="brand-text">Stay on track.</span>
+        </>
+      }
+      subtitle="Welcome back. Your streak is waiting."
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error ? <AuthError>{error}</AuthError> : null}
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error ? (
-            <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
-          ) : null}
+        <AuthLabel label="Email">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="field text-sm normal-case tracking-normal"
+            placeholder="you@example.com"
+          />
+        </AuthLabel>
 
-          <label className="block text-sm font-medium">
-            Email
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5 transition focus:ring-2 focus:ring-ink/30"
-              placeholder="you@example.com"
-            />
-          </label>
+        <AuthLabel label="Password">
+          <input
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="field text-sm normal-case tracking-normal"
+            placeholder="Enter your password"
+          />
+        </AuthLabel>
 
-          <label className="block text-sm font-medium">
-            Password
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5 transition focus:ring-2 focus:ring-ink/30"
-              placeholder="Enter your password"
-            />
-          </label>
-
-          <div className="text-right">
-            <Link to="/forgot" className="text-sm font-medium text-neutral-500 hover:text-ink">
-              Forgot password?
-            </Link>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-2xl bg-ink py-3 shadow-lg text-sm font-semibold text-white disabled:opacity-50"
-          >
-            {loading ? 'Signing in…' : 'Sign in'}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-neutral-500">
-          Don&apos;t have an account?{' '}
-          <Link to="/signup" className="font-semibold text-neutral-950">
-            Sign up
+        <div className="text-right">
+          <Link to="/forgot" className="text-sm font-medium text-white/50 transition-colors hover:text-coral">
+            Forgot password?
           </Link>
-        </p>
-      </div>
-    </div>
+        </div>
+
+        <AuthButton loading={loading} loadingText="Signing in…">
+          Sign in
+        </AuthButton>
+      </form>
+
+      <p className="mt-8 text-center text-sm text-white/50">
+        New here?{' '}
+        <Link to="/signup" className="font-bold text-white hover:text-coral">
+          Create an account
+        </Link>
+      </p>
+    </AuthLayout>
   )
 }

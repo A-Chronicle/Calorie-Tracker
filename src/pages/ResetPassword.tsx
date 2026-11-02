@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
+import AuthLayout, { AuthButton, AuthError, AuthLabel } from '../components/AuthLayout'
 
 export default function ResetPassword() {
   const [params] = useSearchParams()
@@ -37,78 +38,64 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col justify-center px-6 py-12">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ink text-lg font-extrabold text-white shadow-xl">
-          C
+    <AuthLayout
+      title={
+        <>
+          Choose a <span className="brand-text">new password</span>
+        </>
+      }
+    >
+      {message ? (
+        <div className="space-y-4">
+          <div className="rounded-3xl border border-mint/30 bg-mint/10 p-5 text-sm">
+            <p className="font-bold text-mint">All set</p>
+            <p className="mt-1 text-white/70">{message}</p>
+          </div>
+          <Link
+            to="/signin"
+            className="brand-gradient block w-full rounded-2xl py-3.5 text-center text-sm font-bold text-white shadow-xl shadow-coral/25"
+          >
+            Go to sign in
+          </Link>
         </div>
-        <p className="mt-3 text-center text-sm font-bold tracking-[0.3em] text-neutral-500">CAL-c</p>
-        <h1 className="mt-4 text-center text-3xl font-bold tracking-tight">
-          Choose a <span>new password</span>
-        </h1>
-      </div>
+      ) : !token ? (
+        <div className="space-y-4">
+          <AuthError>This link is missing its reset code. Please use the link from your email.</AuthError>
+          <Link to="/forgot" className="block text-center text-sm font-bold text-white hover:text-coral">
+            Request a new link
+          </Link>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error ? <AuthError>{error}</AuthError> : null}
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
-        {message ? (
-          <div className="space-y-4">
-            <div className="rounded-2xl bg-mint/15 px-4 py-4 text-sm text-ink">
-              <p className="font-semibold">All set</p>
-              <p className="mt-1 text-neutral-600">{message}</p>
-            </div>
-            <Link
-              to="/signin"
-              className="block w-full rounded-2xl bg-ink py-3 text-center text-sm font-semibold text-white shadow-lg"
-            >
-              Go to sign in
-            </Link>
-          </div>
-        ) : !token ? (
-          <div className="space-y-4">
-            <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
-              This link is missing its reset code. Please use the link from your email.
-            </div>
-            <Link to="/forgot" className="block text-center text-sm font-semibold text-ink">
-              Request a new link
-            </Link>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error ? <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
+          <AuthLabel label="New password">
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="field text-sm normal-case tracking-normal"
+              placeholder="At least 8 characters"
+            />
+          </AuthLabel>
 
-            <label className="block text-sm font-medium">
-              New password
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5 transition focus:ring-2 focus:ring-ink/30"
-                placeholder="At least 8 characters"
-              />
-            </label>
+          <AuthLabel label="Confirm password">
+            <input
+              type="password"
+              required
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              className="field text-sm normal-case tracking-normal"
+              placeholder="Type it again"
+            />
+          </AuthLabel>
 
-            <label className="block text-sm font-medium">
-              Confirm password
-              <input
-                type="password"
-                required
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                className="mt-1 block w-full rounded-2xl bg-white px-3 py-2.5 outline-none ring-1 ring-black/5 transition focus:ring-2 focus:ring-ink/30"
-                placeholder="Type it again"
-              />
-            </label>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-2xl bg-ink py-3 text-sm font-semibold text-white shadow-lg disabled:opacity-50"
-            >
-              {loading ? 'Saving…' : 'Save new password'}
-            </button>
-          </form>
-        )}
-      </div>
-    </div>
+          <AuthButton loading={loading} loadingText="Saving…">
+            Save new password
+          </AuthButton>
+        </form>
+      )}
+    </AuthLayout>
   )
 }

@@ -83,10 +83,10 @@ scripts/        migrate.mjs (applies server/schema.sql)
 | --- | --- | --- |
 | POST | `/api/auth/signup` | Create an account and start a session |
 | POST | `/api/auth/signin` | Start a session (rate-limited: 5 attempts per email and 50 per IP every 15 minutes) |
-| POST | `/api/auth/signout` | End the session |
+| DELETE | `/api/auth/session` | End the session |
 | POST | `/api/auth/forgot` | Email a single-use reset link (always the same response) |
 | POST | `/api/auth/reset` | Set a new password from a reset link; signs out all sessions |
-| GET | `/api/auth/me` | Current user or `null` |
+| GET | `/api/auth/session` | Current user or `null` |
 | GET | `/api/data` | Profile, meals and weights for the signed-in user |
 | PUT | `/api/profile` | Save profile and goals |
 | POST | `/api/photos` | Upload a meal photo (JPEG, PNG or WebP, up to 3 MB); returns a key |

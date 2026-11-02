@@ -3,8 +3,8 @@ import { NavLink } from 'react-router-dom'
 import { useTracker } from '../context/useTracker'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
-  `flex w-20 flex-col items-center gap-0.5 py-1 text-[11px] font-semibold transition-colors ${
-    isActive ? 'text-ink' : 'text-neutral-400 hover:text-ink'
+  `flex w-20 flex-col items-center gap-0.5 rounded-full py-1.5 text-[11px] font-semibold transition-colors ${
+    isActive ? 'text-white' : 'text-white/40 hover:text-white/80'
   }`
 
 export default function BottomNav() {
@@ -12,7 +12,7 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-5 z-30 px-5">
-      <div className="relative mx-auto flex max-w-sm items-center justify-around rounded-full bg-white px-3 py-2.5 shadow-xl shadow-ink/10 ring-1 ring-black/5">
+      <div className="relative mx-auto flex max-w-sm items-center justify-around rounded-full border border-white/10 bg-[#14141d]/85 px-3 py-2.5 shadow-2xl shadow-black/60 backdrop-blur-xl">
         <NavLink to="/dashboard" className={linkClass}>
           <Home className="h-5 w-5" />
           Home
@@ -29,10 +29,10 @@ export default function BottomNav() {
         <button
           type="button"
           onClick={() => setLogOpen(true)}
-          className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-white shadow-lg shadow-ink/30 transition-transform active:scale-95"
+          className="brand-gradient absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0b0b12] text-white shadow-[0_10px_30px_-4px_rgba(255,90,78,0.7)] transition-transform hover:scale-105 active:scale-95"
           aria-label="Log a meal"
         >
-          <Plus className="h-7 w-7" />
+          <Plus className="h-8 w-8" strokeWidth={2.6} />
         </button>
       </div>
     </nav>

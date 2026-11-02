@@ -11,7 +11,10 @@ export default function AppShell() {
   if (!ready) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-neutral-500">Loading…</p>
+        <div className="flex items-center gap-2 text-sm font-medium text-white/50">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-coral" />
+          Loading…
+        </div>
       </div>
     )
   }
@@ -20,7 +23,7 @@ export default function AppShell() {
   if (!profile) return <Navigate to="/setup" replace />
 
   return (
-    <div className="min-h-screen pb-32">
+    <div className="min-h-screen pb-36">
       <div className="mx-auto w-full max-w-md">
         <Outlet />
       </div>
