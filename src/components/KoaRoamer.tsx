@@ -6,12 +6,13 @@ import {
   useState,
   type CSSProperties,
   type MouseEvent,
+  type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { Heart, Volume2, VolumeX } from 'lucide-react'
 import { useAuth } from '../context/useAuth'
 import { useTracker } from '../context/useTracker'
 import { localDateKey, shiftDateKey } from '../lib/dates'
-import KoalaMascot, { type KoalaMood } from './illustrations/KoalaMascot'
+import PixelKoala, { type KoalaFrame } from './illustrations/PixelKoala'
 
 type Moment = 'idle' | 'logged' | 'within' | 'exact' | 'milestone' | 'over'
 type SoundKind = 'chirp' | 'happy' | 'celebrate' | 'nudge'
@@ -204,8 +205,12 @@ export default function KoaRoamer() {
   })
   const [facing, setFacing] = useState<1 | -1>(-1)
   const [moving, setMoving] = useState(false)
+  const [walkStep, setWalkStep] = useState<'walk1' | 'walk2'>('walk1')
   const [travel, setTravel] = useState(2200)
   const [paused, setPaused] = useState(false)
+  const [napping, setNapping] = useState(false)
+  const [perched, setPerched] = useState(false)
+  const [dragging, setDragging] = useState(false)
   const [bubble, setBubble] = useState<string | null>(null)
   const [celebrate, setCelebrate] = useState(false)
   const [showHearts, setShowHearts] = useState(false)
@@ -225,13 +230,24 @@ export default function KoaRoamer() {
       window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   )
 
+  const rootRef = useRef<HTMLDivElement | null>(null)
   const posRef = useRef(pos)
   const bubbleTimer = useRef<number | null>(null)
   const heartsTimer = useRef<number | null>(null)
   const celebrateTimer = useRef<number | null>(null)
+  const napTimer = useRef<number | null>(null)
+  const perchTimer = useRef<number | null>(null)
   const lastPet = useRef(0)
   const lastSpoke = useRef(0)
   const moves = useRef(0)
+  const drag = useRef({
+    pointerId: -1,
+    startX: 0,
+    startY: 0,
+    originX: 0,
+    originY: 0,
+    moved: false,
+  })
 
   const { play, unlock } = useKoaSound(soundOn)
 
@@ -262,16 +278,83 @@ export default function KoaRoamer() {
   const celebrating = moment === 'milestone' || moment === 'exact' || moment === 'within'
   const celebrationText = messageFor(moment, streak)
 
-  const speak = useCallback((text: string, duration = 3800) => {
-    setBubble(text)
-    setPaused(true)
-    lastSpoke.current = Date.now()
-    if (bubbleTimer.current) window.clearTimeout(bubbleTimer.current)
-    bubbleTimer.current = window.setTimeout(() => {
-      setBubble(null)
-      setPaused(false)
-    }, duration)
+  const wake = useCallback(() => {
+    if (napTimer.current) {
+      window.clearTimeout(napTimer.current)
+      napTimer.current = null
+    }
+    setNapping(false)
   }, [])
+
+  const speak = useCallback(
+    (text: string, duration = 3800) => {
+      wake()
+      setBubble(text)
+      setPaused(true)
+      lastSpoke.current = Date.now()
+      if (bubbleTimer.current) window.clearTimeout(bubbleTimer.current)
+      bubbleTimer.current = window.setTimeout(() => {
+        setBubble(null)
+        setPaused(false)
+      }, duration)
+    },
+    [wake],
+  )
+
+  const nap = useCallback(() => {
+    if (napTimer.current) window.clearTimeout(napTimer.current)
+    if (perchTimer.current) {
+      window.clearTimeout(perchTimer.current)
+      perchTimer.current = null
+    }
+    setPerched(false)
+    setNapping(true)
+    napTimer.current = window.setTimeout(() => {
+      napTimer.current = null
+      setNapping(false)
+      speak('*yawn*... five more minutes?', 2600)
+    }, 7000 + Math.random() * 4000)
+  }, [speak])
+
+  const perchPoint = useCallback((): Point | null => {
+    const target = document.querySelector<HTMLElement>('[data-koa-perch]')
+    if (!target) return null
+    const rect = target.getBoundingClientRect()
+    const { minX, maxX } = bounds(window.innerWidth, window.innerHeight)
+    return {
+      x: Math.min(Math.max(rect.left + rect.width / 2 - SIZE / 2, minX), maxX),
+      y: Math.min(
+        Math.max(rect.top - SIZE + 10, MARGIN),
+        Math.max(MARGIN, window.innerHeight - SIZE - MARGIN),
+      ),
+    }
+  }, [])
+
+  const perch = useCallback((): boolean => {
+    const target = perchPoint()
+    if (!target) return false
+
+    const from = posRef.current
+    const dx = target.x - from.x
+    const duration = Math.round(
+      Math.min(5200, Math.max(1200, Math.hypot(dx, target.y - from.y) * 11)),
+    )
+
+    if (Math.abs(dx) > 6) setFacing(dx < 0 ? -1 : 1)
+    posRef.current = target
+    setTravel(duration)
+    setPos(target)
+    setMoving(true)
+    setPerched(true)
+
+    if (perchTimer.current) window.clearTimeout(perchTimer.current)
+    perchTimer.current = window.setTimeout(() => {
+      perchTimer.current = null
+      setPerched(false)
+    }, duration + 5200)
+
+    return true
+  }, [perchPoint])
 
   useEffect(() => {
     posRef.current = pos
@@ -311,24 +394,42 @@ export default function KoaRoamer() {
   }, [soundOn, unlock])
 
   useEffect(() => {
-    if (paused || reducedMotion || moving) return
+    if (paused || reducedMotion || moving || napping || perched || dragging) return
 
     const timer = window.setTimeout(() => {
+      if (napping || perched || dragging) return
+
+      moves.current += 1
+      const action = moves.current
+      if (action % 2 === 0) play('chirp')
+
+      if (action % 4 === 0 && perch()) return
+      if (action % 5 === 0 && Math.random() < 0.45) {
+        nap()
+        return
+      }
+
       const from = posRef.current
       const target = randomPoint()
       const dx = target.x - from.x
       const distance = Math.hypot(dx, target.y - from.y)
       if (Math.abs(dx) > 6) setFacing(dx < 0 ? -1 : 1)
       setTravel(Math.round(Math.min(5200, Math.max(1500, distance * 11))))
+      posRef.current = target
       setPos(target)
       setMoving(true)
-
-      moves.current += 1
-      if (moves.current % 2 === 0) play('chirp')
     }, 900 + Math.random() * 2200)
 
     return () => window.clearTimeout(timer)
-  }, [paused, reducedMotion, moving, play])
+  }, [paused, reducedMotion, moving, napping, perched, dragging, perch, nap, play])
+
+  useEffect(() => {
+    if (!moving || reducedMotion) return
+    const timer = window.setInterval(() => {
+      setWalkStep((step) => (step === 'walk1' ? 'walk2' : 'walk1'))
+    }, 260)
+    return () => window.clearInterval(timer)
+  }, [moving, reducedMotion])
 
   useEffect(() => {
     if (!moving) return
@@ -376,7 +477,7 @@ export default function KoaRoamer() {
         /* ignore */
       }
       if (Date.now() - lastSpoke.current < 5000) return
-      speak("Hi, I'm Koa! Tap me to say hello.", 4200)
+      speak("Hi, I'm Koa! Tap me to say hello, or tug me somewhere new.", 4200)
       play('chirp')
     }, 2200)
 
@@ -388,26 +489,33 @@ export default function KoaRoamer() {
       if (bubbleTimer.current) window.clearTimeout(bubbleTimer.current)
       if (heartsTimer.current) window.clearTimeout(heartsTimer.current)
       if (celebrateTimer.current) window.clearTimeout(celebrateTimer.current)
+      if (napTimer.current) window.clearTimeout(napTimer.current)
+      if (perchTimer.current) window.clearTimeout(perchTimer.current)
     }
   }, [])
 
   if (!profile) return null
 
-  const mood: KoalaMood = celebrate
-    ? 'cheer'
-    : showHearts
-      ? 'happy'
-      : moment === 'over'
-        ? 'nudge'
-        : moment === 'idle'
-          ? 'sleepy'
-          : 'happy'
+  const frame: KoalaFrame = napping
+    ? 'sleep'
+    : celebrate || showHearts
+      ? 'cheer'
+      : perched && !moving
+        ? 'seat'
+        : moving && !reducedMotion
+          ? walkStep
+          : moment === 'over'
+            ? 'grumpy'
+            : 'idle'
 
-  const motionClass = celebrate || showHearts
-    ? 'animate-koa-cheer'
-    : moving
-      ? 'koa-walk'
-      : 'koa-breathe'
+  const motionClass =
+    celebrate || showHearts
+      ? 'animate-koa-cheer'
+      : moving && !reducedMotion
+        ? 'koa-walk'
+        : frame === 'seat' || frame === 'sleep'
+          ? ''
+          : 'koa-breathe'
 
   const center = pos.x + SIZE / 2
   const bubbleWidth = 192
@@ -452,14 +560,75 @@ export default function KoaRoamer() {
     }
   }
 
+  function onPointerDown(event: ReactPointerEvent<HTMLButtonElement>) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    if (drag.current.pointerId !== -1) return
+    wake()
+    if (perchTimer.current) {
+      window.clearTimeout(perchTimer.current)
+      perchTimer.current = null
+    }
+    setPerched(false)
+    setMoving(false)
+
+    const root = rootRef.current
+    const rect = root?.getBoundingClientRect()
+    const originX = rect ? Math.round(rect.left) : posRef.current.x
+    const originY = rect ? Math.round(rect.top) : posRef.current.y
+
+    posRef.current = { x: originX, y: originY }
+    setPos({ x: originX, y: originY })
+    drag.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX,
+      originY,
+      moved: false,
+    }
+    setDragging(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function onPointerMove(event: ReactPointerEvent<HTMLButtonElement>) {
+    const current = drag.current
+    if (current.pointerId !== event.pointerId) return
+
+    const dx = event.clientX - current.startX
+    const dy = event.clientY - current.startY
+    if (!current.moved && Math.hypot(dx, dy) < 5) return
+    current.moved = true
+
+    const { minX, maxX, minY, maxY } = bounds(window.innerWidth, window.innerHeight)
+    const next = {
+      x: Math.min(Math.max(current.originX + dx, minX), maxX),
+      y: Math.min(Math.max(current.originY + dy, minY), maxY),
+    }
+    posRef.current = next
+    setPos(next)
+  }
+
+  function finishDrag(event: ReactPointerEvent<HTMLButtonElement>, allowPet: boolean) {
+    const current = drag.current
+    if (current.pointerId !== event.pointerId) return
+    const wasMoved = current.moved
+    current.pointerId = -1
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+    setDragging(false)
+    if (allowPet && !wasMoved) pet()
+  }
+
   return (
     <div
-      className="fixed left-0 top-0 z-20 will-change-transform"
+      ref={rootRef}
+      className={`fixed left-0 top-0 will-change-transform ${perched ? 'z-40' : 'z-20'}`}
       style={{
         width: SIZE,
         height: SIZE,
         transform: `translate3d(${Math.round(pos.x)}px, ${Math.round(pos.y)}px, 0)`,
-        transition: `transform ${travel}ms linear`,
+        transition: dragging || reducedMotion ? 'none' : `transform ${travel}ms linear`,
       }}
     >
       {celebrate ? (
@@ -499,6 +668,26 @@ export default function KoaRoamer() {
         </div>
       ) : null}
 
+      {napping ? (
+        <div className="pointer-events-none absolute -top-1 right-0 h-12 w-12" aria-hidden="true">
+          <span className="koa-zzz absolute bottom-0 right-1 font-hand text-sm font-semibold text-cream/80">
+            z
+          </span>
+          <span
+            className="koa-zzz absolute bottom-2 right-4 font-hand text-base font-semibold text-cream/70"
+            style={{ animationDelay: '0.6s' }}
+          >
+            z
+          </span>
+          <span
+            className="koa-zzz absolute bottom-4 right-7 font-hand text-lg font-semibold text-cream/60"
+            style={{ animationDelay: '1.2s' }}
+          >
+            Z
+          </span>
+        </div>
+      ) : null}
+
       {bubble ? (
         <div
           role="status"
@@ -522,16 +711,22 @@ export default function KoaRoamer() {
       <div className="h-full w-full" style={{ transform: `scaleX(${facing})` }}>
         <button
           type="button"
-          onClick={pet}
-          onPointerDown={pet}
-          aria-label="Pet Koa the koala"
-          title="Pet Koa"
-          className="pointer-events-auto block h-full w-full cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-coral/70 focus-visible:ring-offset-2 focus-visible:ring-offset-night"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={(event) => finishDrag(event, true)}
+          onPointerCancel={(event) => finishDrag(event, false)}
+          onContextMenu={(event) => event.preventDefault()}
+          onClick={(event) => {
+            if (event.detail === 0) pet()
+          }}
+          aria-label="Pet or drag Koa the koala"
+          title="Pet or drag Koa"
+          className="pointer-events-auto block h-full w-full cursor-grab touch-none select-none rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-coral/70 focus-visible:ring-offset-2 focus-visible:ring-offset-night active:cursor-grabbing"
         >
-          <KoalaMascot
+          <PixelKoala
+            frame={frame}
             size={SIZE}
-            mood={mood}
-            className={`${motionClass} drop-shadow-[0_12px_16px_rgba(0,0,0,0.35)]`}
+            className={`${motionClass} drop-shadow-[0_4px_0_rgba(0,0,0,0.25)]`}
           />
         </button>
       </div>

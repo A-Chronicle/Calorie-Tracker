@@ -12,7 +12,10 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-5 z-30 px-5">
-      <div className="relative mx-auto flex max-w-sm items-center justify-around rounded-full border border-white/10 bg-[#1d1c19]/90 px-3 py-2.5 shadow-2xl shadow-black/60 backdrop-blur-xl">
+      <div
+        data-koa-perch
+        className="relative mx-auto flex max-w-sm items-center justify-around rounded-full border border-white/10 bg-[#1d1c19]/90 px-3 py-2.5 shadow-2xl shadow-black/60 backdrop-blur-xl"
+      >
         <NavLink to="/dashboard" className={linkClass}>
           <Home className="h-5 w-5" />
           Home
