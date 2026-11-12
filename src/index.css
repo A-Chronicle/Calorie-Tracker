@@ -117,3 +117,49 @@ body {
 .animate-pulse-ring {
   animation: pulse-ring 2s ease-out infinite;
 }
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-8px) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(150px) rotate(320deg);
+    opacity: 0;
+  }
+}
+
+.confetti-piece {
+  animation: confetti-fall 2.4s ease-in forwards;
+}
+
+@keyframes koa-cheer {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-5px) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(0) rotate(4deg);
+  }
+  75% {
+    transform: translateY(-4px) rotate(-3deg);
+  }
+}
+
+.animate-koa-cheer {
+  animation: koa-cheer 1.1s ease-in-out 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti-piece,
+  .animate-koa-cheer,
+  .animate-float {
+    animation: none;
+  }
+}

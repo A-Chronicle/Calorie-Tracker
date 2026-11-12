@@ -5,6 +5,7 @@ import { useTracker } from '../context/useTracker'
 import CalorieRing from '../components/CalorieRing'
 import MacroBars from '../components/MacroBars'
 import MealCard from '../components/MealCard'
+import KoaCompanion from '../components/KoaCompanion'
 import CalMascot from '../components/illustrations/CalMascot'
 import PlateDoodle from '../components/illustrations/PlateDoodle'
 import { ScribbleUnderline, Sparkle } from '../components/illustrations/Scribbles'
@@ -133,6 +134,8 @@ export default function Dashboard() {
           />
         </div>
       </section>
+
+      <KoaCompanion />
 
       <section className="mt-9">
         <div className="flex items-end justify-between">
