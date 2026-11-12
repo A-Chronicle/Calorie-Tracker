@@ -3,6 +3,7 @@ import { useAuth } from '../context/useAuth'
 import { useTracker } from '../context/useTracker'
 import BottomNav from './BottomNav'
 import LogMealSheet from './LogMealSheet'
+import KoaRoamer from './KoaRoamer'
 
 export default function AppShell() {
   const { user, ready } = useAuth()
@@ -29,6 +30,7 @@ export default function AppShell() {
       </div>
       <BottomNav />
       <LogMealSheet />
+      <KoaRoamer />
     </div>
   )
 }
