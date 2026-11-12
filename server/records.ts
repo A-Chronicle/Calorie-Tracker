@@ -29,6 +29,10 @@ export interface MealRow {
   items: NutrientItem[] | null
 }
 
+export function photoUrl(key: string | null | undefined): string | undefined {
+  return key ? `/api/photo?key=${encodeURIComponent(key)}` : undefined
+}
+
 export function toMeal(row: MealRow): Meal {
   return {
     id: row.id,
@@ -38,9 +42,7 @@ export function toMeal(row: MealRow): Meal {
     protein: row.protein,
     carbs: row.carbs,
     fat: row.fat,
-    photoUrl: row.photoKey
-      ? `/api/photo?key=${encodeURIComponent(row.photoKey)}`
-      : (row.photoDataUrl ?? undefined),
+    photoUrl: photoUrl(row.photoKey) ?? (row.photoDataUrl ?? undefined),
     loggedAt: row.loggedAt.toISOString(),
     source: row.source,
     items: row.items ?? undefined,

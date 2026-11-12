@@ -58,16 +58,16 @@ export default function Progress() {
           value={`${avg}`}
           sub="kcal per logged day"
           fraction={goal ? Math.min(avg / goal, 1) : 0}
-          from="#ff5a4e"
-          to="#ffb020"
+          from="#b8735f"
+          to="#c9a87c"
         />
         <MetricCard
           label="Days logged"
           value={`${loggedDays}/${range}`}
           sub={latestWeight ? `Last weight ${latestWeight} kg` : 'No weight yet'}
           fraction={range ? loggedDays / range : 0}
-          from="#7c5cff"
-          to="#3d8bff"
+          from="#7fa08a"
+          to="#7d94b0"
         />
       </section>
 
@@ -102,7 +102,7 @@ export default function Progress() {
                 <div className="flex h-36 w-full items-end">
                   <div
                     className={`w-full rounded-full transition-[height] duration-700 ${
-                      over ? 'bg-[linear-gradient(180deg,#ff5a4e,#ff8a3d)]' : 'bg-[linear-gradient(180deg,#7c5cff,#3d8bff)]'
+                      over ? 'bg-[linear-gradient(180deg,#b8735f,#c9a87c)]' : 'bg-[linear-gradient(180deg,#7fa08a,#7d94b0)]'
                     }`}
                     style={{ height: `${height}%` }}
                     title={`${day.date}: ${day.calories} kcal`}

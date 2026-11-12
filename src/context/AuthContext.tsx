@@ -46,8 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  function updateAvatar(avatarUrl?: string) {
+    setUser((prev) => (prev ? { ...prev, avatarUrl } : prev))
+  }
+
   return (
-    <AuthContext.Provider value={{ user, ready, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, ready, signIn, signUp, signOut, updateAvatar }}>
       {children}
     </AuthContext.Provider>
   )

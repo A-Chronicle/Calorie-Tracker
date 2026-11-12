@@ -57,6 +57,10 @@ export const weightSchema = z.object({
   kg: z.number().min(20).max(400),
 })
 
+export const avatarSchema = z.object({
+  avatarKey: z.string().max(200).regex(PHOTO_KEY, 'Invalid photo key').nullable(),
+})
+
 export const forgotPasswordSchema = z.object({
   email: z.string().trim().toLowerCase().max(254),
 })

@@ -2,28 +2,30 @@
 
 @theme {
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
-  --color-coral: #ff5a4e;
-  --color-amber: #ffb020;
-  --color-mint: #12c49a;
-  --color-sky: #3d8bff;
-  --color-plum: #7c5cff;
-  --color-ink: #1b1b33;
-  --color-night: #0b0b12;
-  --color-panel: #16161f;
+  --font-hand: "Caveat", ui-rounded, cursive;
+  --color-coral: #c47b63;
+  --color-amber: #c8a878;
+  --color-mint: #8fb59b;
+  --color-sky: #8fa8c4;
+  --color-plum: #a092bd;
+  --color-ink: #17161a;
+  --color-night: #131311;
+  --color-panel: #1d1c19;
+  --color-cream: #e9e5dd;
 }
 
 @utility glass {
-  background-color: rgb(255 255 255 / 0.06);
-  border: 1px solid rgb(255 255 255 / 0.08);
+  background-color: rgb(255 255 255 / 0.04);
+  border: 1px solid rgb(255 255 255 / 0.07);
   backdrop-filter: blur(16px);
 }
 
 @utility brand-gradient {
-  background-image: linear-gradient(135deg, #ff5a4e 0%, #ff8a3d 50%, #ffb020 100%);
+  background-image: linear-gradient(135deg, #a85f4c 0%, #b87a5c 50%, #c9a87c 100%);
 }
 
 @utility brand-text {
-  background-image: linear-gradient(120deg, #ff5a4e 0%, #ffb020 60%, #ffd166 100%);
+  background-image: linear-gradient(120deg, #d08a70 0%, #cdaa7e 60%, #e0c9a0 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -48,8 +50,8 @@
   }
 
   .field:focus {
-    border-color: rgb(255 90 78 / 0.7);
-    box-shadow: 0 0 0 4px rgb(255 90 78 / 0.15);
+    border-color: rgb(196 123 99 / 0.7);
+    box-shadow: 0 0 0 4px rgb(196 123 99 / 0.15);
   }
 }
 
@@ -62,13 +64,13 @@ body,
 body {
   margin: 0;
   font-family: var(--font-sans);
-  color: #f5f5fa;
+  color: #e9e5dd;
   color-scheme: dark;
   -webkit-font-smoothing: antialiased;
-  background-color: #0b0b12;
+  background-color: #131311;
   background-image:
-    radial-gradient(60% 35% at 0% 0%, rgb(255 90 78 / 0.16), transparent 70%),
-    radial-gradient(50% 35% at 100% 15%, rgb(124 92 255 / 0.16), transparent 70%);
+    radial-gradient(60% 35% at 0% 0%, rgb(196 123 99 / 0.07), transparent 70%),
+    radial-gradient(50% 35% at 100% 15%, rgb(160 146 189 / 0.06), transparent 70%);
   background-attachment: fixed;
 }
 

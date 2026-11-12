@@ -10,15 +10,18 @@ const EXTENSIONS: Record<string, string> = {
   'image/webp': 'webp',
 }
 
-// Keys are server-generated: meals/<userId>/<uuid>.<ext>. Anything else is rejected.
-export const PHOTO_KEY = /^meals\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/
+// Keys are server-generated: <folder>/<userId>/<uuid>.<ext>. Anything else is rejected.
+// Meal photos live under meals/, profile pictures under avatars/.
+export const PHOTO_KEY = /^(meals|avatars)\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/
+
+export type PhotoFolder = 'meals' | 'avatars'
 
 export function photoExtension(contentType: string): string | undefined {
   return EXTENSIONS[contentType]
 }
 
-export function newPhotoKey(userId: string, contentType: string): string {
-  return `meals/${userId}/${crypto.randomUUID()}.${photoExtension(contentType)}`
+export function newPhotoKey(userId: string, contentType: string, folder: PhotoFolder = 'meals'): string {
+  return `${folder}/${userId}/${crypto.randomUUID()}.${photoExtension(contentType)}`
 }
 
 // Checks the file's leading bytes so a renamed or mislabeled file can't be stored as an image.

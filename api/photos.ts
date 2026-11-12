@@ -18,7 +18,8 @@ export async function POST(request: Request) {
     if (bytes.byteLength > MAX_PHOTO_BYTES) throw new HttpError(413, 'Photo must be 3 MB or smaller')
     if (!looksLikeImage(bytes, contentType)) throw new HttpError(415, 'File is not a valid image')
 
-    const key = newPhotoKey(user.id, contentType)
+    const folder = new URL(request.url).searchParams.get('kind') === 'avatar' ? 'avatars' : 'meals'
+    const key = newPhotoKey(user.id, contentType, folder)
     await storePhoto(key, bytes, contentType)
     return Response.json({ key }, { status: 201 })
   } catch (error) {

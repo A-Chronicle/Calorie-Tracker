@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './context/useAuth'
 import AppShell from './components/AppShell'
+import PaperGrain from './components/illustrations/PaperGrain'
 import SignIn from './pages/SignIn'
 import SignUp from './pages/SignUp'
 import Setup from './pages/Setup'
@@ -19,7 +20,8 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <div className="min-h-screen text-ink">
+    <div className="min-h-screen text-cream">
+      <PaperGrain />
       <Routes>
         <Route path="/" element={<Navigate to="/signin" replace />} />
         <Route

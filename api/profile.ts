@@ -1,13 +1,36 @@
 import { requireUser } from '../server/auth.js'
 import { query } from '../server/db.js'
-import { errorResponse, readJson } from '../server/http.js'
-import { PROFILE_COLUMNS } from '../server/records.js'
-import { profileSchema } from '../server/schemas.js'
+import { errorResponse, HttpError, readJson } from '../server/http.js'
+import { removePhoto } from '../server/photos.js'
+import { photoUrl, PROFILE_COLUMNS } from '../server/records.js'
+import { avatarSchema, profileSchema } from '../server/schemas.js'
 import type { Profile } from '../src/types.js'
 
 export async function PUT(request: Request) {
   try {
     const user = await requireUser(request)
+
+    // PUT /api/profile?avatar=1 updates only the profile picture, so the stats form and the
+    // avatar picker can save independently without sending each other's fields.
+    if (new URL(request.url).searchParams.get('avatar') === '1') {
+      const input = await readJson(request, avatarSchema)
+      if (input.avatarKey && !input.avatarKey.startsWith(`avatars/${user.id}/`)) {
+        throw new HttpError(400, 'Photo does not belong to this account')
+      }
+
+      const previous = await query<{ avatarKey: string | null }>(
+        'SELECT avatar_key AS "avatarKey" FROM users WHERE id = $1',
+        [user.id],
+      )
+      await query('UPDATE users SET avatar_key = $2 WHERE id = $1', [user.id, input.avatarKey])
+
+      const oldKey = previous.rows[0]?.avatarKey
+      if (oldKey && oldKey !== input.avatarKey) {
+        await removePhoto(oldKey).catch((error: unknown) => console.error('Avatar cleanup failed', error))
+      }
+      return Response.json({ avatarUrl: photoUrl(input.avatarKey) })
+    }
+
     const input = await readJson(request, profileSchema)
     const { rows } = await query<Profile>(
       `INSERT INTO profiles (user_id, sex, age, height_cm, weight_kg, activity, goal,

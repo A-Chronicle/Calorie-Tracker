@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS users (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Optional profile picture. Points at a private blob in the avatars/ folder.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_key TEXT;
+
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY,
   user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,

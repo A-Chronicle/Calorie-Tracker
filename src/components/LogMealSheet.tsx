@@ -152,7 +152,7 @@ export default function LogMealSheet() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm animate-rise">
-      <div className="flex max-h-[92vh] w-full max-w-md flex-col rounded-t-[32px] border-t border-white/10 bg-[#14141d] shadow-2xl">
+      <div className="flex max-h-[92vh] w-full max-w-md flex-col rounded-t-[32px] border-t border-white/10 bg-[#1d1c19] shadow-2xl">
         <div className="flex items-center justify-between px-5 pt-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-white/40">Add to today</p>
@@ -238,7 +238,7 @@ export default function LogMealSheet() {
                 type="button"
                 disabled={!photo || analyzing}
                 onClick={() => void analyzePhoto()}
-                className="w-full rounded-2xl bg-white py-3.5 text-sm font-bold text-night shadow-lg transition-transform active:scale-[0.99] disabled:opacity-40"
+                className="w-full rounded-2xl bg-cream py-3.5 text-sm font-bold text-night shadow-lg transition-transform active:scale-[0.99] disabled:opacity-40"
               >
                 {analyzing ? 'Analyzing…' : 'Analyze meal'}
               </button>
@@ -287,7 +287,7 @@ export default function LogMealSheet() {
                 <button
                   type="button"
                   onClick={() => logFromItems('search')}
-                  className="w-full rounded-2xl bg-white py-3.5 text-sm font-bold text-night shadow-lg transition-transform active:scale-[0.99]"
+                  className="w-full rounded-2xl bg-cream py-3.5 text-sm font-bold text-night shadow-lg transition-transform active:scale-[0.99]"
                 >
                   Add {Math.round(totals.calories)} kcal
                 </button>

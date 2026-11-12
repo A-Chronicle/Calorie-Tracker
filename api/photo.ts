@@ -7,7 +7,8 @@ export async function GET(request: Request) {
   try {
     const user = await requireUser(request)
     const key = new URL(request.url).searchParams.get('key') ?? ''
-    if (!PHOTO_KEY.test(key) || !key.startsWith(`meals/${user.id}/`)) {
+    const ownsKey = key.startsWith(`meals/${user.id}/`) || key.startsWith(`avatars/${user.id}/`)
+    if (!PHOTO_KEY.test(key) || !ownsKey) {
       throw new HttpError(404, 'Photo not found')
     }
 

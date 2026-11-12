@@ -16,11 +16,11 @@ export default function CalorieRing({ consumed, goal, size = 132 }: CalorieRingP
 
   return (
     <div className="relative shrink-0 animate-float" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90 drop-shadow-[0_0_18px_rgba(255,255,255,0.35)]" aria-hidden="true">
+      <svg width={size} height={size} className="-rotate-90 drop-shadow-[0_4px_16px_rgba(0,0,0,0.35)]" aria-hidden="true">
         <defs>
           <linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="100%" stopColor="#ffe9a8" />
+            <stop offset="0%" stopColor="#e9e5dd" />
+            <stop offset="100%" stopColor="#c8a878" />
           </linearGradient>
         </defs>
         <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth={stroke} />

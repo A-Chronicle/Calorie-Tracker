@@ -30,9 +30,11 @@ export async function api<T = void>(path: string, { method = 'GET', body }: ApiO
 }
 
 // Uploads a compressed photo (a data URL from the browser) and returns the storage key to attach to a meal.
-export async function uploadPhoto(dataUrl: string): Promise<string> {
+// Pass 'avatars' for a profile picture.
+export async function uploadPhoto(dataUrl: string, folder: 'meals' | 'avatars' = 'meals'): Promise<string> {
   const blob = await (await fetch(dataUrl)).blob()
-  const response = await fetch('/api/photos', {
+  const endpoint = folder === 'avatars' ? '/api/photos?kind=avatar' : '/api/photos'
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': blob.type },
     body: blob,

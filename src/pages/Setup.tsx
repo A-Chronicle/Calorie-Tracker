@@ -102,7 +102,7 @@ export default function Setup() {
         {preview ? (
           <div className="animate-rise rounded-3xl border border-white/10 bg-panel p-4 text-center">
             <p className="text-xs font-semibold uppercase tracking-wide text-white/45">Suggested target</p>
-            <p className="mt-1 bg-[linear-gradient(120deg,#ff5a4e,#ffb020)] bg-clip-text text-4xl font-black text-transparent">
+            <p className="mt-1 bg-[linear-gradient(120deg,#c47b63,#c8a878)] bg-clip-text text-4xl font-black text-transparent">
               {preview}
               <span className="ml-1 text-base text-white/50">kcal/day</span>
             </p>

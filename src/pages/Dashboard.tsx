@@ -5,8 +5,11 @@ import { useTracker } from '../context/useTracker'
 import CalorieRing from '../components/CalorieRing'
 import MacroBars from '../components/MacroBars'
 import MealCard from '../components/MealCard'
+import CalMascot from '../components/illustrations/CalMascot'
+import PlateDoodle from '../components/illustrations/PlateDoodle'
+import { ScribbleUnderline, Sparkle } from '../components/illustrations/Scribbles'
+import MealIcon from '../components/illustrations/MealIcon'
 import { formatDayHeading, localDateKey, shiftDateKey } from '../lib/dates'
-import { MEAL_EMOJI } from '../lib/meals'
 import type { MealType } from '../types'
 
 const ORDER: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack']
@@ -54,10 +57,14 @@ export default function Dashboard() {
       <header className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-sm font-medium text-white/50">{greeting()}</p>
-          <h1 className="truncate text-2xl font-extrabold tracking-tight">{firstName} 👋</h1>
+          <h1 className="truncate text-2xl font-extrabold tracking-tight">{firstName}</h1>
         </div>
-        <div className="brand-gradient flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-base font-black text-white shadow-lg shadow-coral/30">
-          {firstName?.charAt(0).toUpperCase()}
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-panel shadow-lg shadow-black/30">
+          {user?.avatarUrl ? (
+            <img src={user.avatarUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <CalMascot mood={over ? 'neutral' : 'happy'} size={38} />
+          )}
         </div>
       </header>
 
@@ -86,17 +93,30 @@ export default function Dashboard() {
         <p className="mt-4 rounded-2xl border border-coral/30 bg-coral/10 px-4 py-3 text-sm text-coral">{error}</p>
       ) : null}
 
-      <section className="relative mt-5 overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#ff5a4e_0%,#ff8a3d_45%,#7c5cff_100%)] p-6 text-white shadow-2xl shadow-coral/25 animate-rise">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/15 blur-2xl" />
+      <section className="relative mt-5 overflow-hidden rounded-[32px] border border-white/[0.06] bg-[linear-gradient(135deg,#3a2b27_0%,#4a3530_45%,#35303f_100%)] p-6 text-white shadow-2xl shadow-black/40 animate-rise">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/[0.07] blur-2xl" />
+        <svg
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-24 w-full text-white/[0.06]"
+          viewBox="0 0 400 120"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path d="M0 78c58-38 106-8 158 2s92 18 142-12 76-18 100-8v60H0Z" fill="currentColor" />
+          <path d="M0 100c68-20 118 10 178 10s112-30 152-20 50 10 70 6v24H0Z" fill="currentColor" opacity="0.6" />
+        </svg>
 
         <div className="relative flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/75">
+            <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.18em] text-white/75">
+              <Sparkle className="h-3 w-3 text-amber/70" />
               {over ? 'Over goal' : 'Left today'}
             </p>
             <p className="mt-1 text-6xl font-black leading-none tracking-tight">{Math.abs(remaining)}</p>
             <p className="mt-2 text-sm font-medium text-white/80">
               {Math.round(totals.calories)} / {profile.calorieGoal} kcal
+            </p>
+            <p className="mt-1 font-hand text-lg text-white/50">
+              {over ? 'tomorrow is a new page' : 'one meal at a time'}
             </p>
           </div>
           <CalorieRing consumed={totals.calories} goal={profile.calorieGoal} />
@@ -117,10 +137,11 @@ export default function Dashboard() {
       <section className="mt-9">
         <div className="flex items-end justify-between">
           <div>
-            <h2 className="text-xl font-extrabold tracking-tight">Today&apos;s meals</h2>
-            <p className="text-xs font-medium text-white/40">
-              {dayMeals.length} logged
-            </p>
+            <h2 className="relative inline-block text-xl font-extrabold tracking-tight">
+              Today&apos;s meals
+              <ScribbleUnderline className="absolute -bottom-1.5 left-0 h-2 w-full text-coral/50" />
+            </h2>
+            <p className="mt-1 text-xs font-medium text-white/40">{dayMeals.length} logged</p>
           </div>
           <button
             type="button"
@@ -138,8 +159,12 @@ export default function Dashboard() {
             onClick={() => setLogOpen(true)}
             className="group mt-5 flex w-full flex-col items-center rounded-[28px] border border-dashed border-white/15 bg-white/[0.03] px-6 py-10 text-center transition-colors hover:border-coral/50 hover:bg-coral/5"
           >
-            <span className="animate-float text-5xl">📸</span>
-            <p className="mt-4 text-lg font-bold">Log your first meal</p>
+            <div className="relative mt-2 flex justify-center">
+              <PlateDoodle className="h-28 w-44 text-white/25" />
+              <CalMascot mood="sleepy" size={54} className="absolute -right-1 bottom-0 rotate-6" />
+            </div>
+            <p className="mt-1 font-hand text-xl text-coral/80">the plate is empty</p>
+            <p className="mt-1 text-lg font-bold">Log your first meal</p>
             <p className="mt-1 max-w-[16rem] text-sm text-white/50">
               Snap a photo, search the food library, or type it in. We&apos;ll do the math.
             </p>
@@ -153,7 +178,7 @@ export default function Dashboard() {
               <div key={group.type}>
                 <div className="mb-2.5 flex items-center justify-between px-1">
                   <p className="flex items-center gap-2 text-sm font-bold capitalize text-white/90">
-                    <span>{MEAL_EMOJI[group.type]}</span>
+                    <MealIcon type={group.type} size={22} />
                     {group.type}
                   </p>
                   <span className="text-xs font-semibold text-white/40">{group.calories} kcal</span>

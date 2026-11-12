@@ -1,6 +1,6 @@
 import { Trash2 } from 'lucide-react'
 import { mealHourLabel } from '../lib/dates'
-import { MEAL_EMOJI } from '../lib/meals'
+import MealIcon from './illustrations/MealIcon'
 import type { Meal } from '../types'
 
 interface MealCardProps {
@@ -14,8 +14,8 @@ export default function MealCard({ meal, onDelete }: MealCardProps) {
       {meal.photoUrl ? (
         <img src={meal.photoUrl} alt="" className="h-18 w-18 shrink-0 rounded-2xl object-cover" />
       ) : (
-        <div className="flex h-18 w-18 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(255,90,78,0.25),rgba(124,92,255,0.25))] text-3xl">
-          {MEAL_EMOJI[meal.mealType]}
+        <div className="flex h-18 w-18 shrink-0 items-center justify-center rounded-2xl border border-white/[0.06] bg-[linear-gradient(135deg,rgba(196,123,99,0.18),rgba(160,146,189,0.18))]">
+          <MealIcon type={meal.mealType} size={34} />
         </div>
       )}
 
@@ -25,7 +25,7 @@ export default function MealCard({ meal, onDelete }: MealCardProps) {
           <span className="shrink-0 text-[11px] font-medium text-white/40">{mealHourLabel(meal.loggedAt)}</span>
         </div>
 
-        <p className="mt-0.5 bg-[linear-gradient(120deg,#ff5a4e,#ffb020)] bg-clip-text text-xl font-extrabold leading-tight text-transparent">
+        <p className="mt-0.5 bg-[linear-gradient(120deg,#c47b63,#c8a878)] bg-clip-text text-xl font-extrabold leading-tight text-transparent">
           {meal.calories}
           <span className="ml-1 text-xs font-semibold text-white/50">kcal</span>
         </p>
